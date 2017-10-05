@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 
 import mensajeria.PaqueteMensaje;
 import mensajeria.PaqueteMovimiento;
+import mensajeria.PaqueteNPC;
 import mensajeria.PaquetePersonaje;
 
 public class Servidor extends Thread {
@@ -51,7 +52,9 @@ public class Servidor extends Thread {
 	public static void main(String[] args) {
 		cargarInterfaz();	
 	}
-
+	
+	private static ArrayList<PaqueteNPC> npcsActivos = new ArrayList<>();
+	
 	private static void cargarInterfaz() {
 		JFrame ventana = new JFrame("Servidor WOME");
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -143,6 +146,14 @@ public class Servidor extends Thread {
 		ventana.setVisible(true);
 	}
 
+	public static ArrayList<PaqueteNPC> getNpcsActivos() {
+		return npcsActivos;
+	}
+
+	public static void setNpcsActivos(ArrayList<PaqueteNPC> npcsActivos) {
+		Servidor.npcsActivos = npcsActivos;
+	}
+
 	public void run() {
 		try {
 			
@@ -230,4 +241,7 @@ public class Servidor extends Thread {
 	public static Conector getConector() {
 		return conexionDB;
 	}
+	
+	
+	
 }

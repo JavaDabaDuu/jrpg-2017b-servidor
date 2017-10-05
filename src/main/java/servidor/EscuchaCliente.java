@@ -16,6 +16,7 @@ import mensajeria.PaqueteDeMovimientos;
 import mensajeria.PaqueteDePersonajes;
 import mensajeria.PaqueteFinalizarBatalla;
 import mensajeria.PaqueteMovimiento;
+import mensajeria.PaqueteNPC;
 import mensajeria.PaquetePersonaje;
 import mensajeria.PaqueteUsuario;
 
@@ -35,6 +36,9 @@ public class EscuchaCliente extends Thread {
 	private PaqueteUsuario paqueteUsuario;
 	private PaqueteDeMovimientos paqueteDeMovimiento;
 	private PaqueteDePersonajes paqueteDePersonajes;
+	private PaqueteNPC paqueteNpc;
+	 private final static int CANTIDADNPCS = 10;
+	 private final static String TIPONPC = "Minotauro";
 
 	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) throws IOException {
 		this.socket = socket;
@@ -166,5 +170,30 @@ public class EscuchaCliente extends Thread {
 	public void setPaqueteUsuario(PaqueteUsuario paqueteUsuario) {
 		this.paqueteUsuario = paqueteUsuario;
 	}
+	
+	 public static void inicializarNPCS() {
+		  int posIniX = 800;
+		  int posIniY = 1041;
+		  
+		  int decrementoX = 405;
+		  int incrementoY = 150;
+		  for(int i = 0; i < CANTIDADNPCS; i++) {//quedan estas cuentas raras para que queden las ubicaciones mas o menos como las habian puesto los chicos
+		   if(i==0)
+		    Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX, posIniY));
+		   if(i<7)
+		    Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY + incrementoY));
+		   
+		   Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY - incrementoY));
+		  }
+		 }
+
+	public PaqueteNPC getPaqueteNpc() {
+		return paqueteNpc;
+	}
+
+	public void setPaqueteNpc(PaqueteNPC paqueteNpc) {
+		this.paqueteNpc = paqueteNpc;
+	}
+	 
 }
 
