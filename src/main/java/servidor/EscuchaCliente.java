@@ -13,6 +13,7 @@ import mensajeria.Paquete;
 import mensajeria.PaqueteAtacar;
 import mensajeria.PaqueteBatalla;
 import mensajeria.PaqueteDeMovimientos;
+import mensajeria.PaqueteDeNPCS;
 import mensajeria.PaqueteDePersonajes;
 import mensajeria.PaqueteFinalizarBatalla;
 import mensajeria.PaqueteMovimiento;
@@ -37,6 +38,7 @@ public class EscuchaCliente extends Thread {
 	private PaqueteDeMovimientos paqueteDeMovimiento;
 	private PaqueteDePersonajes paqueteDePersonajes;
 	private PaqueteNPC paqueteNpc;
+	private PaqueteDeNPCS paqueteDeNpcs;
 	 private final static int CANTIDADNPCS = 10;
 	 private final static String TIPONPC = "Minotauro";
 
@@ -45,6 +47,7 @@ public class EscuchaCliente extends Thread {
 		this.entrada = entrada;
 		this.salida = salida;
 		paquetePersonaje = new PaquetePersonaje();
+		paqueteNpc = new PaqueteNPC();
 	}
 
 	public void run() {
@@ -55,10 +58,10 @@ public class EscuchaCliente extends Thread {
 			paqueteUsuario = new PaqueteUsuario();
 
 			String cadenaLeida = (String) entrada.readObject();
+			
+			this.dibujarMinotauros();
 		
-			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){
-								
-
+			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){						
 				comand = (ComandosServer) paquete.getObjeto(Comando.NOMBREPAQUETE);
 				comand.setCadena(cadenaLeida);
 				comand.setEscuchaCliente(this);
@@ -193,6 +196,19 @@ public class EscuchaCliente extends Thread {
 
 	public void setPaqueteNpc(PaqueteNPC paqueteNpc) {
 		this.paqueteNpc = paqueteNpc;
+	}
+	
+	public void dibujarMinotauros() {		
+		
+		for (PaqueteNPC npc : Servidor.getNpcsActivos()) {
+			paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
+			paqueteDeNpcs.setComando(Comando.CONEXION);
+			try {
+				this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	 
 }
