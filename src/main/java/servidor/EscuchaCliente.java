@@ -202,7 +202,7 @@ public class EscuchaCliente extends Thread {
 		
 		for (PaqueteNPC npc : Servidor.getNpcsActivos()) {
 			paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
-			paqueteDeNpcs.setComando(Comando.CONEXION);
+			paqueteDeNpcs.setComando(Comando.ACTUALIZARNPC);
 			try {
 				this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
 			} catch (IOException e) {
