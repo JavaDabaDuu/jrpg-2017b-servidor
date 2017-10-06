@@ -18,7 +18,7 @@ public class ActualizarNPC extends ComandosServer{
 	   try {
 	    conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaqueteNpc()));
 	   } catch (IOException e) {
-	    Servidor.log.append("Falló al intentar enviar paquetePersonaje a:" + conectado.getPaquetePersonaje().getId() + "\n");
+	    Servidor.log.append("Falló al intentar enviar paqueteNPC a:" + conectado.getPaquetePersonaje().getId() + "\n");
 	   }
 	  }
 	 }
