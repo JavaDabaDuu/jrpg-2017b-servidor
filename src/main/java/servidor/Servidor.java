@@ -53,7 +53,7 @@ public class Servidor extends Thread {
 		cargarInterfaz();	
 	}
 	
-	private static ArrayList<PaqueteNPC> npcsActivos = new ArrayList<>();
+	private static HashMap<Integer, PaqueteNPC> npcsActivos = new HashMap<>();
 	
 	private static void cargarInterfaz() {
 		JFrame ventana = new JFrame("Servidor WOME");
@@ -146,11 +146,11 @@ public class Servidor extends Thread {
 		ventana.setVisible(true);
 	}
 
-	public static ArrayList<PaqueteNPC> getNpcsActivos() {
+	public static HashMap<Integer, PaqueteNPC> getNpcsActivos() {
 		return npcsActivos;
 	}
 
-	public static void setNpcsActivos(ArrayList<PaqueteNPC> npcsActivos) {
+	public static void setNpcsActivos(HashMap<Integer, PaqueteNPC> npcsActivos) {
 		Servidor.npcsActivos = npcsActivos;
 	}
 
@@ -170,7 +170,8 @@ public class Servidor extends Thread {
 			
 			atencionConexiones.start();
 			atencionMovimientos.start();
-
+			EscuchaCliente.inicializarNPCS();
+			
 			while (true) {
 				Socket cliente = serverSocket.accept();
 				ipRemota = cliente.getInetAddress().getHostAddress();

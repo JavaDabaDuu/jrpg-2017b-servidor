@@ -1,13 +1,18 @@
 package servidor;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Iterator;
+
+import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
 import comandos.ComandosServer;
+import juego.Pantalla;
 import mensajeria.Comando;
 import mensajeria.Paquete;
 import mensajeria.PaqueteAtacar;
@@ -28,7 +33,7 @@ public class EscuchaCliente extends Thread {
 	private final ObjectOutputStream salida;
 	private int idPersonaje;
 	private final Gson gson = new Gson();
-	
+
 	private PaquetePersonaje paquetePersonaje;
 	private PaqueteMovimiento paqueteMovimiento;
 	private PaqueteBatalla paqueteBatalla;
@@ -39,10 +44,11 @@ public class EscuchaCliente extends Thread {
 	private PaqueteDePersonajes paqueteDePersonajes;
 	private PaqueteNPC paqueteNpc;
 	private PaqueteDeNPCS paqueteDeNpcs;
-	 private final static int CANTIDADNPCS = 10;
-	 private final static String TIPONPC = "Minotauro";
+	private final static int CANTIDADNPCS = 10;
+	private final static String TIPONPC = "Minotauro";
 
-	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) throws IOException {
+	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida)
+			throws IOException {
 		this.socket = socket;
 		this.entrada = entrada;
 		this.salida = salida;
@@ -58,10 +64,9 @@ public class EscuchaCliente extends Thread {
 			paqueteUsuario = new PaqueteUsuario();
 
 			String cadenaLeida = (String) entrada.readObject();
-			
 			this.dibujarMinotauros();
-		
-			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){						
+
+			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)) {
 				comand = (ComandosServer) paquete.getObjeto(Comando.NOMBREPAQUETE);
 				comand.setCadena(cadenaLeida);
 				comand.setEscuchaCliente(this);
@@ -87,25 +92,25 @@ public class EscuchaCliente extends Thread {
 
 		} catch (IOException | ClassNotFoundException e) {
 			Servidor.log.append("Error de conexion: " + e.getMessage() + System.lineSeparator());
-		} 
+		}
 	}
-	
+
 	public Socket getSocket() {
 		return socket;
 	}
-	
+
 	public ObjectInputStream getEntrada() {
 		return entrada;
 	}
-	
+
 	public ObjectOutputStream getSalida() {
 		return salida;
 	}
-	
-	public PaquetePersonaje getPaquetePersonaje(){
+
+	public PaquetePersonaje getPaquetePersonaje() {
 		return paquetePersonaje;
 	}
-	
+
 	public int getIdPersonaje() {
 		return idPersonaje;
 	}
@@ -173,22 +178,27 @@ public class EscuchaCliente extends Thread {
 	public void setPaqueteUsuario(PaqueteUsuario paqueteUsuario) {
 		this.paqueteUsuario = paqueteUsuario;
 	}
-	
-	 public static void inicializarNPCS() {
-		  int posIniX = 800;
-		  int posIniY = 1041;
-		  
-		  int decrementoX = 405;
-		  int incrementoY = 150;
-		  for(int i = 0; i < CANTIDADNPCS; i++) {//quedan estas cuentas raras para que queden las ubicaciones mas o menos como las habian puesto los chicos
-		   if(i==0)
-		    Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX, posIniY));
-		   if(i<7)
-		    Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY + incrementoY));
-		   
-		   Servidor.getNpcsActivos().add(i, new PaqueteNPC(i, "Minotauro"+i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY - incrementoY));
-		  }
-		 }
+
+	public static void inicializarNPCS() {
+		int posIniX = 800;
+		int posIniY = 1041;
+
+		int decrementoX = 405;
+		int incrementoY = 150;
+		for (int i = 0; i < CANTIDADNPCS; i++) {// quedan estas cuentas raras
+												// para que queden las
+												// ubicaciones mas o menos como
+												// las habian puesto los chicos
+			if (i == 0)
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1, posIniX, posIniY));
+			if (i < 7)
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1,
+						posIniX - decrementoX, posIniY + incrementoY));
+
+			Servidor.getNpcsActivos().put(i,
+					new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY - incrementoY));
+		}
+	}
 
 	public PaqueteNPC getPaqueteNpc() {
 		return paqueteNpc;
@@ -197,19 +207,15 @@ public class EscuchaCliente extends Thread {
 	public void setPaqueteNpc(PaqueteNPC paqueteNpc) {
 		this.paqueteNpc = paqueteNpc;
 	}
-	
-	public void dibujarMinotauros() {		
-		
-		for (PaqueteNPC npc : Servidor.getNpcsActivos()) {
-			paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
-			paqueteDeNpcs.setComando(Comando.ACTUALIZARNPC);
-			try {
-				this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+	public void dibujarMinotauros() {
+		paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
+		paqueteDeNpcs.setComando(Comando.SETEARNPCS);
+		try {
+			this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
-	 
-}
 
+}
