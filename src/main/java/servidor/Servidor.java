@@ -179,8 +179,9 @@ public class Servidor extends Thread {
 
 				ObjectOutputStream salida = new ObjectOutputStream(cliente.getOutputStream());
 				ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-
+				
 				EscuchaCliente atencion = new EscuchaCliente(ipRemota, cliente, entrada, salida);
+				
 				atencion.start();
 				clientesConectados.add(atencion);
 			}

@@ -62,9 +62,9 @@ public class EscuchaCliente extends Thread {
 			Paquete paquete;
 			Paquete paqueteSv = new Paquete(null, 0);
 			paqueteUsuario = new PaqueteUsuario();
+			inicializarNPCS();
 
 			String cadenaLeida = (String) entrada.readObject();
-			this.dibujarMinotauros();
 
 			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)) {
 				comand = (ComandosServer) paquete.getObjeto(Comando.NOMBREPAQUETE);
@@ -73,7 +73,6 @@ public class EscuchaCliente extends Thread {
 				comand.ejecutar();
 				cadenaLeida = (String) entrada.readObject();
 			}
-
 			entrada.close();
 			salida.close();
 			socket.close();
@@ -93,6 +92,7 @@ public class EscuchaCliente extends Thread {
 		} catch (IOException | ClassNotFoundException e) {
 			Servidor.log.append("Error de conexion: " + e.getMessage() + System.lineSeparator());
 		}
+
 	}
 
 	public Socket getSocket() {
@@ -189,14 +189,16 @@ public class EscuchaCliente extends Thread {
 												// para que queden las
 												// ubicaciones mas o menos como
 												// las habian puesto los chicos
-			if (i == 0)
+			if (i == 0) {
 				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1, posIniX, posIniY));
-			if (i < 7)
+			} else if (i < 7) {
 				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1,
 						posIniX - decrementoX, posIniY + incrementoY));
+			} else {
 
-			Servidor.getNpcsActivos().put(i,
-					new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1, posIniX - decrementoX, posIniY - incrementoY));
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1,
+						posIniX - decrementoX, posIniY - incrementoY));
+			}
 		}
 	}
 
@@ -208,9 +210,9 @@ public class EscuchaCliente extends Thread {
 		this.paqueteNpc = paqueteNpc;
 	}
 
-	public void dibujarMinotauros() {
+	public void enviarPaqueteNPC() {
 		paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
-		paqueteDeNpcs.setComando(Comando.SETEARNPCS);
+		paqueteDeNpcs.setComando(Comando.SETEARNPC);
 		try {
 			this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
 		} catch (IOException e) {
