@@ -48,6 +48,7 @@ public class Servidor extends Thread {
 	
 	public static AtencionConexiones atencionConexiones;
 	public static AtencionMovimientos atencionMovimientos;
+	public static AtencionMovimientosNPC atencionMovimientosNPC;
 
 	public static void main(String[] args) {
 		cargarInterfaz();	
@@ -167,10 +168,14 @@ public class Servidor extends Thread {
 			
 			atencionConexiones = new AtencionConexiones();
 			atencionMovimientos = new AtencionMovimientos();
+			atencionMovimientosNPC = new AtencionMovimientosNPC();
 			
 			atencionConexiones.start();
 			atencionMovimientos.start();
+			
 			EscuchaCliente.inicializarNPCS();
+			
+			atencionMovimientosNPC.start();
 			
 			while (true) {
 				Socket cliente = serverSocket.accept();

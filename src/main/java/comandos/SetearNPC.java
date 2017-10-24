@@ -12,8 +12,6 @@ public class SetearNPC extends ComandosServer {
 	@Override
 	public void ejecutar() {
 		PaqueteDeNPCS paqueteDeNpcs = (PaqueteDeNPCS) gson.fromJson(cadenaLeida, PaqueteDeNPCS.class);
-		System.out.println(paqueteDeNpcs);
-		System.out.println(Servidor.getNpcsActivos());
 		paqueteDeNpcs.getNpcs().putAll(Servidor.getNpcsActivos());
 		try {
 			escuchaCliente.getSalida().writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));

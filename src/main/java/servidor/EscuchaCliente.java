@@ -45,7 +45,7 @@ public class EscuchaCliente extends Thread {
 	private PaqueteNPC paqueteNpc;
 	private PaqueteDeNPCS paqueteDeNpcs;
 	private final static int CANTIDADNPCS = 10;
-	private final static String TIPONPC = "Minotauro";
+	private final static String TIPONPC = "npc";
 
 	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida)
 			throws IOException {
@@ -190,13 +190,13 @@ public class EscuchaCliente extends Thread {
 												// ubicaciones mas o menos como
 												// las habian puesto los chicos
 			if (i == 0) {
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1, posIniX, posIniY));
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1, posIniX, posIniY));
 			} else if (i < 7) {
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1,
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
 						posIniX - decrementoX, posIniY + incrementoY));
 			} else {
 
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Minotauro" + i, TIPONPC, 1, 1,
+				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
 						posIniX - decrementoX, posIniY - incrementoY));
 			}
 		}
