@@ -28,227 +28,221 @@ import mensajeria.PaquetePersonaje;
 
 public class Servidor extends Thread {
 
-	private static ArrayList<EscuchaCliente> clientesConectados = new ArrayList<>();
-	
-	private static Map<Integer, PaqueteMovimiento> ubicacionPersonajes = new HashMap<>();
-	private static Map<Integer, PaquetePersonaje> personajesConectados = new HashMap<>();
+  private static ArrayList<EscuchaCliente> clientesConectados = new ArrayList<>();
+  private static Map<Integer, PaqueteMovimiento> ubicacionPersonajes = new HashMap<>();
+  private static Map<Integer, PaquetePersonaje> personajesConectados = new HashMap<>();
 
-	private static Thread server;
-	
-	private static ServerSocket serverSocket;
-	private static Conector conexionDB;
-	private final int PUERTO = 55050;
+  private static Thread server;
 
-	private final static int ANCHO = 700;
-	private final static int ALTO = 640;
-	private final static int ALTO_LOG = 520;
-	private final static int ANCHO_LOG = ANCHO - 25;
+  private static ServerSocket serverSocket;
+  private static Conector conexionDB;
+  private final int PUERTO = 55050;
 
-	public static JTextArea log;
-	
-	public static AtencionConexiones atencionConexiones;
-	public static AtencionMovimientos atencionMovimientos;
-	public static AtencionMovimientosNPC atencionMovimientosNPC;
+  private final static int ANCHO = 700;
+  private final static int ALTO = 640;
+  private final static int ALTO_LOG = 520;
+  private final static int ANCHO_LOG = ANCHO - 25;
 
-	public static void main(String[] args) {
-		cargarInterfaz();	
-	}
-	
-	private static HashMap<Integer, PaqueteNPC> npcsActivos = new HashMap<>();
-	
-	private static void cargarInterfaz() {
-		JFrame ventana = new JFrame("Servidor WOME");
-		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		ventana.setSize(ANCHO, ALTO);
-		ventana.setResizable(false);
-		ventana.setLocationRelativeTo(null);
-		ventana.setLayout(null);
-		ventana.setIconImage(Toolkit.getDefaultToolkit().getImage("src/main/java/servidor/server.png"));
-		JLabel titulo = new JLabel("Log del servidor...");
-		titulo.setFont(new Font("Courier New", Font.BOLD, 16));
-		titulo.setBounds(10, 0, 200, 30);
-		ventana.add(titulo);
+  public static JTextArea log;
+  
+  public static AtencionConexiones atencionConexiones;
+  public static AtencionMovimientos atencionMovimientos;
+  public static AtencionMovimientosNPC atencionMovimientosNPC;
 
-		log = new JTextArea();
-		log.setEditable(false);
-		log.setFont(new Font("Times New Roman", Font.PLAIN, 13));
-		JScrollPane scroll = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scroll.setBounds(10, 40, ANCHO_LOG, ALTO_LOG);
-		ventana.add(scroll);
+  public static void main(String[] args) {
+    cargarInterfaz();
+  }
 
-		final JButton botonIniciar = new JButton();
-		final JButton botonDetener = new JButton();
-		botonIniciar.setText("Iniciar");
-		botonIniciar.setBounds(220, ALTO - 70, 100, 30);
-		botonIniciar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				server = new Thread(new Servidor());
-				server.start();
-				botonIniciar.setEnabled(false);
-				botonDetener.setEnabled(true);
-			}
-		});
+  private static HashMap<Integer, PaqueteNPC> npcsActivos = new HashMap<>();
 
-		ventana.add(botonIniciar);
+  private static void cargarInterfaz() {
+    JFrame ventana = new JFrame("Servidor WOME");
+    ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    ventana.setSize(ANCHO, ALTO);
+    ventana.setResizable(false);
+    ventana.setLocationRelativeTo(null);
+    ventana.setLayout(null);
+    ventana.setIconImage(Toolkit.getDefaultToolkit().getImage("src/main/java/servidor/server.png"));
+    JLabel titulo = new JLabel("Log del servidor...");
+    titulo.setFont(new Font("Courier New", Font.BOLD, 16));
+    titulo.setBounds(10, 0, 200, 30);
+    ventana.add(titulo);
 
-		botonDetener.setText("Detener");
-		botonDetener.setBounds(360, ALTO - 70, 100, 30);
-		botonDetener.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					server.stop();
-					atencionConexiones.stop();
-					atencionMovimientos.stop();
-					for (EscuchaCliente cliente : clientesConectados) {
-						cliente.getSalida().close();
-						cliente.getEntrada().close();
-						cliente.getSocket().close();
-					}
-					serverSocket.close();
-					log.append("El servidor se ha detenido." + System.lineSeparator());
-				} catch (IOException e1) {
-					log.append("Fallo al intentar detener el servidor." + System.lineSeparator());
-				}
-				if(conexionDB != null)
-					conexionDB.close();
-				botonDetener.setEnabled(false);
-				botonIniciar.setEnabled(true);
-			}
-		});
-		botonDetener.setEnabled(false);
-		ventana.add(botonDetener);
+    log = new JTextArea();
+    log.setEditable(false);
+    log.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+    JScrollPane scroll = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    scroll.setBounds(10, 40, ANCHO_LOG, ALTO_LOG);
+    ventana.add(scroll);
 
-		ventana.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		ventana.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				if (serverSocket != null) {
-					try {
-						server.stop();
-						atencionConexiones.stop();
-						atencionMovimientos.stop();
-						for (EscuchaCliente cliente : clientesConectados) {
-							cliente.getSalida().close();
-							cliente.getEntrada().close();
-							cliente.getSocket().close();
-						}
-						serverSocket.close();
-						log.append("El servidor se ha detenido." + System.lineSeparator());
-					} catch (IOException e) {
-						log.append("Fallo al intentar detener el servidor." + System.lineSeparator());
-						System.exit(1);
-					}
-				}
-				if (conexionDB != null)
-					conexionDB.close();
-				System.exit(0);
-			}
-		});
+    final JButton botonIniciar = new JButton();
+    final JButton botonDetener = new JButton();
+    botonIniciar.setText("Iniciar");
+    botonIniciar.setBounds(220, ALTO - 70, 100, 30);
+    botonIniciar.addActionListener(new ActionListener() {
+    
+      public void actionPerformed(ActionEvent e) {
+        server = new Thread(new Servidor());
+        server.start();
+        botonIniciar.setEnabled(false);
+        botonDetener.setEnabled(true);
+      }
+      });
+    ventana.add(botonIniciar);
 
-		ventana.setVisible(true);
-	}
+    botonDetener.setText("Detener");
+    botonDetener.setBounds(360, ALTO - 70, 100, 30);
+    botonDetener.addActionListener(new ActionListener() {
+    
+      public void actionPerformed(ActionEvent e) {
+        try {
+          server.stop();
+          atencionConexiones.stop();
+          atencionMovimientos.stop();
+          for (EscuchaCliente cliente : clientesConectados) {
+            cliente.getSalida().close();
+            cliente.getEntrada().close();
+            cliente.getSocket().close();
+          }
+          serverSocket.close();
+          log.append("El servidor se ha detenido." + System.lineSeparator());
+          } catch (IOException e1) {
+            log.append("Fallo al intentar detener el servidor." + System.lineSeparator());
+          }
+        
+          if (conexionDB != null) {
+            conexionDB.close();
+          }
+          botonDetener.setEnabled(false);
+          botonIniciar.setEnabled(true);
+          }
+      });
+    botonDetener.setEnabled(false);
+    ventana.add(botonDetener);
 
-	public static HashMap<Integer, PaqueteNPC> getNpcsActivos() {
-		return npcsActivos;
-	}
+    ventana.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    ventana.addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent evt) {
+        if (serverSocket != null) {
+          try {
+            server.stop();
+            atencionConexiones.stop();
+            atencionMovimientos.stop();
+            for (EscuchaCliente cliente : clientesConectados) {
+              cliente.getSalida().close();
+              cliente.getEntrada().close();
+              cliente.getSocket().close();
+            }
+            serverSocket.close();
+            log.append("El servidor se ha detenido." + System.lineSeparator());
+            } catch (IOException e) {
+            log.append("Fallo al intentar detener el servidor." + System.lineSeparator());
+            System.exit(1);
+          }
+        }
+        if (conexionDB != null) {
+          conexionDB.close();
+        }
+        System.exit(0);
+        }
+      });
+    ventana.setVisible(true);
+  }
+  
+  public static HashMap<Integer, PaqueteNPC> getNpcsActivos() {
+    return npcsActivos;
+  }
 
-	public static void setNpcsActivos(HashMap<Integer, PaqueteNPC> npcsActivos) {
-		Servidor.npcsActivos = npcsActivos;
-	}
+  public static void setNpcsActivos(HashMap<Integer, PaqueteNPC> npcsActivos) {
+    Servidor.npcsActivos = npcsActivos;
+  }
 
-	public void run() {
-		try {
-			
-			conexionDB = new Conector();
-			conexionDB.connect();
-			
-			log.append("Iniciando el servidor..." + System.lineSeparator());
-			serverSocket = new ServerSocket(PUERTO);
-			log.append("Servidor esperando conexiones..." + System.lineSeparator());
-			String ipRemota;
-			
-			atencionConexiones = new AtencionConexiones();
-			atencionMovimientos = new AtencionMovimientos();
-			atencionMovimientosNPC = new AtencionMovimientosNPC();
-			
-			atencionConexiones.start();
-			atencionMovimientos.start();
-			
-			EscuchaCliente.inicializarNPCS();
-			
-			atencionMovimientosNPC.start();
-			
-			while (true) {
-				Socket cliente = serverSocket.accept();
-				ipRemota = cliente.getInetAddress().getHostAddress();
-				log.append(ipRemota + " se ha conectado" + System.lineSeparator());
+  @Override
+  public void run() {
+    try {
+      conexionDB = new Conector();
+      conexionDB.connect();
+      log.append("Iniciando el servidor..." + System.lineSeparator());
+      serverSocket = new ServerSocket(PUERTO);
+      log.append("Servidor esperando conexiones..." + System.lineSeparator());
+      String ipRemota;
+      atencionConexiones = new AtencionConexiones();
+      atencionMovimientos = new AtencionMovimientos();
+      atencionMovimientosNPC = new AtencionMovimientosNPC();
+      atencionConexiones.start();
+      atencionMovimientos.start();
+      EscuchaCliente.inicializarNPCS();
+      atencionMovimientosNPC.start();
+      while (true) {
+        Socket cliente = serverSocket.accept();
+        ipRemota = cliente.getInetAddress().getHostAddress();
+        log.append(ipRemota + " se ha conectado" + System.lineSeparator());
+        ObjectOutputStream salida = new ObjectOutputStream(cliente.getOutputStream());
+        ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+        EscuchaCliente atencion = new EscuchaCliente(ipRemota, cliente, entrada, salida);
+        atencion.start();
+        clientesConectados.add(atencion);
+      }
+    } catch (Exception e) {
+      log.append("Fallo la conexión." + System.lineSeparator());
+    }
+  }
 
-				ObjectOutputStream salida = new ObjectOutputStream(cliente.getOutputStream());
-				ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-				
-				EscuchaCliente atencion = new EscuchaCliente(ipRemota, cliente, entrada, salida);
-				
-				atencion.start();
-				clientesConectados.add(atencion);
-			}
-		} catch (Exception e) {
-			log.append("Fallo la conexión." + System.lineSeparator());
-		}
-	}
+  public static boolean mensajeAUsuario(PaqueteMensaje pqm) {
+    boolean result = true;
+    boolean noEncontro = true;
+    for (Map.Entry<Integer, PaquetePersonaje> personaje : personajesConectados.entrySet()) {
+      if (noEncontro && (!personaje.getValue().getNombre().equals(pqm.getUserReceptor()))) {
+        result = false;
+      } else {
+        result = true;
+        noEncontro = false;
+      }
+    }
+    // Si existe inicio sesion
+    if (result) {
+      Servidor.log.append(pqm.getUserEmisor() + " envió mensaje a " + pqm.getUserReceptor() 
+          + System.lineSeparator());
+      return true;
+    } else {
+      // Si no existe informo y devuelvo false
+      Servidor.log.append("El mensaje para " + pqm.getUserReceptor() 
+          + " no se envió, ya que se encuentra desconectado." + System.lineSeparator());
+      return false;
+    }
+  }
+  
+  public static boolean mensajeAAll(int contador) {
+    boolean result = true;
+    if (personajesConectados.size() != contador + 1) {
+      result = false;
+    }
+    // Si existe inicio sesion
+    if (result) {
+      Servidor.log.append("Se ha enviado un mensaje a todos los usuarios" + System.lineSeparator());
+      return true;
+    } else {
+      // Si no existe informo y devuelvo false
+      Servidor.log.append("Uno o más de todos los usuarios se ha desconectado,"
+          + " se ha mandado el mensaje a los demas." + System.lineSeparator());
+      return false;
+    }
+  }
+  
+  public static ArrayList<EscuchaCliente> getClientesConectados() {
+    return clientesConectados;
+  }
 
-	public static boolean mensajeAUsuario(PaqueteMensaje pqm) {
-		boolean result = true;
-		boolean noEncontro = true;
-		for (Map.Entry<Integer, PaquetePersonaje> personaje : personajesConectados.entrySet()) {
-			if(noEncontro && (!personaje.getValue().getNombre().equals(pqm.getUserReceptor()))) {
-				result = false;
-			} else {
-				result = true;
-				noEncontro = false;
-			}
-		}
-		// Si existe inicio sesion
-		if (result) {
-			Servidor.log.append(pqm.getUserEmisor() + " envió mensaje a " + pqm.getUserReceptor() + System.lineSeparator());
-				return true;
-		} else {
-			// Si no existe informo y devuelvo false
-			Servidor.log.append("El mensaje para " + pqm.getUserReceptor() + " no se envió, ya que se encuentra desconectado." + System.lineSeparator());
-			return false;
-		}
-	}
-	
-	public static boolean mensajeAAll(int contador) {
-		boolean result = true;
-		if(personajesConectados.size() != contador+1) {
-			result = false;
-		}
-		// Si existe inicio sesion
-		if (result) {
-			Servidor.log.append("Se ha enviado un mensaje a todos los usuarios" + System.lineSeparator());
-				return true;
-		} else {
-			// Si no existe informo y devuelvo false
-			Servidor.log.append("Uno o más de todos los usuarios se ha desconectado, se ha mandado el mensaje a los demas." + System.lineSeparator());
-			return false;
-		}
-	}
-	
-	public static ArrayList<EscuchaCliente> getClientesConectados() {
-		return clientesConectados;
-	}
+  public static Map<Integer, PaqueteMovimiento> getUbicacionPersonajes() {
+    return ubicacionPersonajes;
+  }
+  
+  public static Map<Integer, PaquetePersonaje> getPersonajesConectados() {
+    return personajesConectados;
+  }
 
-	public static Map<Integer, PaqueteMovimiento> getUbicacionPersonajes() {
-		return ubicacionPersonajes;
-	}
-	
-	public static Map<Integer, PaquetePersonaje> getPersonajesConectados() {
-		return personajesConectados;
-	}
-
-	public static Conector getConector() {
-		return conexionDB;
-	}
-	
-	
-	
+  public static Conector getConector() {
+    return conexionDB;
+  }
 }

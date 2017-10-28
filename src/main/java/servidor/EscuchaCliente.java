@@ -1,5 +1,8 @@
 package servidor;
 
+import com.google.gson.Gson;
+import comandos.ComandosServer;
+
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,9 +12,6 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
-import com.google.gson.Gson;
-
-import comandos.ComandosServer;
 import juego.Pantalla;
 import mensajeria.Comando;
 import mensajeria.Paquete;
@@ -28,196 +28,197 @@ import mensajeria.PaqueteUsuario;
 
 public class EscuchaCliente extends Thread {
 
-	private final Socket socket;
-	private final ObjectInputStream entrada;
-	private final ObjectOutputStream salida;
-	private int idPersonaje;
-	private final Gson gson = new Gson();
+  private final Socket socket;
+  private final ObjectInputStream entrada;
+  private final ObjectOutputStream salida;
+  private int idPersonaje;
+  private final Gson gson = new Gson();
+  
+  private PaquetePersonaje paquetePersonaje;
+  private PaqueteMovimiento paqueteMovimiento;
+  private PaqueteBatalla paqueteBatalla;
+  private PaqueteAtacar paqueteAtacar;
+  private PaqueteFinalizarBatalla paqueteFinalizarBatalla;
+  private PaqueteUsuario paqueteUsuario;
+  private PaqueteDeMovimientos paqueteDeMovimiento;
+  private PaqueteDePersonajes paqueteDePersonajes;
+  private PaqueteNPC paqueteNpc;
+  private PaqueteDeNPCS paqueteDeNpcs;
+  private final static int CANTIDADNPCS = 10;
+  private final static String TIPONPC = "npc";
 
-	private PaquetePersonaje paquetePersonaje;
-	private PaqueteMovimiento paqueteMovimiento;
-	private PaqueteBatalla paqueteBatalla;
-	private PaqueteAtacar paqueteAtacar;
-	private PaqueteFinalizarBatalla paqueteFinalizarBatalla;
-	private PaqueteUsuario paqueteUsuario;
-	private PaqueteDeMovimientos paqueteDeMovimiento;
-	private PaqueteDePersonajes paqueteDePersonajes;
-	private PaqueteNPC paqueteNpc;
-	private PaqueteDeNPCS paqueteDeNpcs;
-	private final static int CANTIDADNPCS = 10;
-	private final static String TIPONPC = "npc";
+  public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada,
+      ObjectOutputStream salida)
+      throws IOException {
+    this.socket = socket;
+    this.entrada = entrada;
+    this.salida = salida;
+    paquetePersonaje = new PaquetePersonaje();
+    paqueteNpc = new PaqueteNPC();
+  }
 
-	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida)
-			throws IOException {
-		this.socket = socket;
-		this.entrada = entrada;
-		this.salida = salida;
-		paquetePersonaje = new PaquetePersonaje();
-		paqueteNpc = new PaqueteNPC();
-	}
+  @Override 
+public void run() {
+    try {
+      ComandosServer comand;
+      Paquete paquete;
+      Paquete paqueteSv = new Paquete(null, 0);
+      paqueteUsuario = new PaqueteUsuario();
+      inicializarNPCS();
+      String cadenaLeida = (String) entrada.readObject();
 
-	public void run() {
-		try {
-			ComandosServer comand;
-			Paquete paquete;
-			Paquete paqueteSv = new Paquete(null, 0);
-			paqueteUsuario = new PaqueteUsuario();
-			inicializarNPCS();
+      while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class))
+      .getComando() == Comando.DESCONECTAR)) {
+        comand = (ComandosServer) paquete.getObjeto(Comando.NOMBREPAQUETE);
+        comand.setCadena(cadenaLeida);
+        comand.setEscuchaCliente(this);
+        comand.ejecutar();
+        cadenaLeida = (String) entrada.readObject();
+      }
+      entrada.close();
+      salida.close();
+      socket.close();
+      
+      Servidor.getPersonajesConectados().remove(paquetePersonaje.getId());
+      Servidor.getUbicacionPersonajes().remove(paquetePersonaje.getId());
+      Servidor.getClientesConectados().remove(this);
 
-			String cadenaLeida = (String) entrada.readObject();
+      for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
+        paqueteDePersonajes = new PaqueteDePersonajes(Servidor.getPersonajesConectados());
+        paqueteDePersonajes.setComando(Comando.CONEXION);
+        conectado.salida.writeObject(gson.toJson(paqueteDePersonajes, PaqueteDePersonajes.class));
+      }
 
-			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)) {
-				comand = (ComandosServer) paquete.getObjeto(Comando.NOMBREPAQUETE);
-				comand.setCadena(cadenaLeida);
-				comand.setEscuchaCliente(this);
-				comand.ejecutar();
-				cadenaLeida = (String) entrada.readObject();
-			}
-			entrada.close();
-			salida.close();
-			socket.close();
+      Servidor.log.append(paquete.getIp() + " se ha desconectado." + System.lineSeparator());
 
-			Servidor.getPersonajesConectados().remove(paquetePersonaje.getId());
-			Servidor.getUbicacionPersonajes().remove(paquetePersonaje.getId());
-			Servidor.getClientesConectados().remove(this);
+    } catch (IOException | ClassNotFoundException | InstantiationException 
+        | IllegalAccessException e) {
+      Servidor.log.append("Error de conexion: " + e.getMessage() + System.lineSeparator());
+    }
+  }
 
-			for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
-				paqueteDePersonajes = new PaqueteDePersonajes(Servidor.getPersonajesConectados());
-				paqueteDePersonajes.setComando(Comando.CONEXION);
-				conectado.salida.writeObject(gson.toJson(paqueteDePersonajes, PaqueteDePersonajes.class));
-			}
+  public Socket getSocket() {
+    return socket;
+  }
 
-			Servidor.log.append(paquete.getIp() + " se ha desconectado." + System.lineSeparator());
+  public ObjectInputStream getEntrada() {
+    return entrada;
+  }
 
-		} catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			Servidor.log.append("Error de conexion: " + e.getMessage() + System.lineSeparator());
-		}
+  public ObjectOutputStream getSalida() {
+    return salida;
+  }
+  
+  public PaquetePersonaje getPaquetePersonaje() {
+    return paquetePersonaje;
+  }
 
-	}
+  public int getIdPersonaje() {
+    return idPersonaje;
+  }
 
-	public Socket getSocket() {
-		return socket;
-	}
+  public PaqueteMovimiento getPaqueteMovimiento() {
+    return paqueteMovimiento;
+  }
 
-	public ObjectInputStream getEntrada() {
-		return entrada;
-	}
+  public void setPaqueteMovimiento(PaqueteMovimiento paqueteMovimiento) {
+    this.paqueteMovimiento = paqueteMovimiento;
+  }
+  
+  public PaqueteBatalla getPaqueteBatalla() {
+    return paqueteBatalla;
+  }
 
-	public ObjectOutputStream getSalida() {
-		return salida;
-	}
+  public void setPaqueteBatalla(PaqueteBatalla paqueteBatalla) {
+    this.paqueteBatalla = paqueteBatalla;
+  }
 
-	public PaquetePersonaje getPaquetePersonaje() {
-		return paquetePersonaje;
-	}
+  public PaqueteAtacar getPaqueteAtacar() {
+    return paqueteAtacar;
+  }
 
-	public int getIdPersonaje() {
-		return idPersonaje;
-	}
+  public void setPaqueteAtacar(PaqueteAtacar paqueteAtacar) {
+    this.paqueteAtacar = paqueteAtacar;
+  }
 
-	public PaqueteMovimiento getPaqueteMovimiento() {
-		return paqueteMovimiento;
-	}
+  public PaqueteFinalizarBatalla getPaqueteFinalizarBatalla() {
+    return paqueteFinalizarBatalla;
+  }
 
-	public void setPaqueteMovimiento(PaqueteMovimiento paqueteMovimiento) {
-		this.paqueteMovimiento = paqueteMovimiento;
-	}
+  public void setPaqueteFinalizarBatalla(PaqueteFinalizarBatalla paqueteFinalizarBatalla) {
+    this.paqueteFinalizarBatalla = paqueteFinalizarBatalla;
+  }
 
-	public PaqueteBatalla getPaqueteBatalla() {
-		return paqueteBatalla;
-	}
+  public PaqueteDeMovimientos getPaqueteDeMovimiento() {
+    return paqueteDeMovimiento;
+  }
 
-	public void setPaqueteBatalla(PaqueteBatalla paqueteBatalla) {
-		this.paqueteBatalla = paqueteBatalla;
-	}
+  public void setPaqueteDeMovimiento(PaqueteDeMovimientos paqueteDeMovimiento) {
+    this.paqueteDeMovimiento = paqueteDeMovimiento;
+  }
 
-	public PaqueteAtacar getPaqueteAtacar() {
-		return paqueteAtacar;
-	}
+  public PaqueteDePersonajes getPaqueteDePersonajes() {
+    return paqueteDePersonajes;
+  }
 
-	public void setPaqueteAtacar(PaqueteAtacar paqueteAtacar) {
-		this.paqueteAtacar = paqueteAtacar;
-	}
+  public void setPaqueteDePersonajes(PaqueteDePersonajes paqueteDePersonajes) {
+    this.paqueteDePersonajes = paqueteDePersonajes;
+  }
+  
+  public void setIdPersonaje(int idPersonaje) {
+    this.idPersonaje = idPersonaje;
+  }
 
-	public PaqueteFinalizarBatalla getPaqueteFinalizarBatalla() {
-		return paqueteFinalizarBatalla;
-	}
+  public void setPaquetePersonaje(PaquetePersonaje paquetePersonaje) {
+    this.paquetePersonaje = paquetePersonaje;
+  }
 
-	public void setPaqueteFinalizarBatalla(PaqueteFinalizarBatalla paqueteFinalizarBatalla) {
-		this.paqueteFinalizarBatalla = paqueteFinalizarBatalla;
-	}
+  public PaqueteUsuario getPaqueteUsuario() {
+    return paqueteUsuario;
+  }
+  
+  public void setPaqueteUsuario(PaqueteUsuario paqueteUsuario) {
+    this.paqueteUsuario = paqueteUsuario;
+  }
 
-	public PaqueteDeMovimientos getPaqueteDeMovimiento() {
-		return paqueteDeMovimiento;
-	}
+  public static void inicializarNPCS() {
+    int posIniX = 800;
+    int posIniY = 1041;
 
-	public void setPaqueteDeMovimiento(PaqueteDeMovimientos paqueteDeMovimiento) {
-		this.paqueteDeMovimiento = paqueteDeMovimiento;
-	}
+    int decrementoX = 405;
+    int incrementoY = 150;
+    for (int i = 0; i < CANTIDADNPCS; i++) {
+      // quedan estas cuentas raras para que queden las
+      // ubicaciones mas o menos como las habian puesto los chicos
+      if (i == 0) {
+        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" 
+            + i, TIPONPC, 1, 1, posIniX, posIniY));
+      } else if (i < 7) {
+        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
+            posIniX - decrementoX, posIniY + incrementoY));
+      } else {
 
-	public PaqueteDePersonajes getPaqueteDePersonajes() {
-		return paqueteDePersonajes;
-	}
+        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
+            posIniX - decrementoX, posIniY - incrementoY));
+      }
+    }
+  }
 
-	public void setPaqueteDePersonajes(PaqueteDePersonajes paqueteDePersonajes) {
-		this.paqueteDePersonajes = paqueteDePersonajes;
-	}
+  public PaqueteNPC getPaqueteNpc() {
+    return paqueteNpc;
+  }
 
-	public void setIdPersonaje(int idPersonaje) {
-		this.idPersonaje = idPersonaje;
-	}
+  public void setPaqueteNpc(PaqueteNPC paqueteNpc) {
+    this.paqueteNpc = paqueteNpc;
+  }
 
-	public void setPaquetePersonaje(PaquetePersonaje paquetePersonaje) {
-		this.paquetePersonaje = paquetePersonaje;
-	}
-
-	public PaqueteUsuario getPaqueteUsuario() {
-		return paqueteUsuario;
-	}
-
-	public void setPaqueteUsuario(PaqueteUsuario paqueteUsuario) {
-		this.paqueteUsuario = paqueteUsuario;
-	}
-
-	public static void inicializarNPCS() {
-		int posIniX = 800;
-		int posIniY = 1041;
-
-		int decrementoX = 405;
-		int incrementoY = 150;
-		for (int i = 0; i < CANTIDADNPCS; i++) {// quedan estas cuentas raras
-												// para que queden las
-												// ubicaciones mas o menos como
-												// las habian puesto los chicos
-			if (i == 0) {
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1, posIniX, posIniY));
-			} else if (i < 7) {
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
-						posIniX - decrementoX, posIniY + incrementoY));
-			} else {
-
-				Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
-						posIniX - decrementoX, posIniY - incrementoY));
-			}
-		}
-	}
-
-	public PaqueteNPC getPaqueteNpc() {
-		return paqueteNpc;
-	}
-
-	public void setPaqueteNpc(PaqueteNPC paqueteNpc) {
-		this.paqueteNpc = paqueteNpc;
-	}
-
-	public void enviarPaqueteNPC() {
-		paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
-		paqueteDeNpcs.setComando(Comando.SETEARNPC);
-		try {
-			this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+  public void enviarPaqueteNPC() {
+    paqueteDeNpcs = new PaqueteDeNPCS(Servidor.getNpcsActivos());
+    paqueteDeNpcs.setComando(Comando.SETEARNPC);
+    try {
+      this.salida.writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }

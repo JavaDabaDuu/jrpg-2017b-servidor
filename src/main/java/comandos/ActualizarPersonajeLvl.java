@@ -8,24 +8,23 @@ import servidor.Servidor;
 
 public class ActualizarPersonajeLvl extends ComandosServer {
 
-	@Override
-	public void ejecutar() {
-		escuchaCliente.setPaquetePersonaje((PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class));
-		
-		Servidor.getConector().actualizarPersonajeSubioNivel(escuchaCliente.getPaquetePersonaje());
-		
-		Servidor.getPersonajesConectados().remove(escuchaCliente.getPaquetePersonaje().getId());
-		Servidor.getPersonajesConectados().put(escuchaCliente.getPaquetePersonaje().getId(), escuchaCliente.getPaquetePersonaje());
-		escuchaCliente.getPaquetePersonaje().ponerBonus();
-		escuchaCliente.getPaquetePersonaje().actualizarPuntosPorNivel();
-		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
-			try {
-				conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaquetePersonaje()));
-			} catch (IOException e) {
-				Servidor.log.append("Falló al intentar enviar paquetePersonaje a:" + conectado.getPaquetePersonaje().getId() + "\n");
-			}
-		}
-
-	}
-
+  @Override
+public void ejecutar() {
+    escuchaCliente.setPaquetePersonaje((PaquetePersonaje) 
+        gson.fromJson(cadenaLeida, PaquetePersonaje.class));
+    Servidor.getConector().actualizarPersonajeSubioNivel(escuchaCliente.getPaquetePersonaje());
+    Servidor.getPersonajesConectados().remove(escuchaCliente.getPaquetePersonaje().getId());
+    Servidor.getPersonajesConectados().put(escuchaCliente.getPaquetePersonaje().getId(),
+        escuchaCliente.getPaquetePersonaje());
+    escuchaCliente.getPaquetePersonaje().ponerBonus();
+    escuchaCliente.getPaquetePersonaje().actualizarPuntosPorNivel();
+    for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
+      try {
+        conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaquetePersonaje()));
+      } catch (IOException e) {
+        Servidor.log.append("Falló al intentar enviar paquetePersonaje a:" 
+            + conectado.getPaquetePersonaje().getId() + "\n");
+      }
+    }
+  }
 }
