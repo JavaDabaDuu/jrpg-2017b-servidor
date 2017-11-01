@@ -65,7 +65,7 @@ public class Conector {
       st1.setString(1, user.getUsername());
       result = st1.executeQuery();
       */
-    	if (session.get(PaqueteUsuario.class,user.getUsername()) != null) {
+    	if (session.get(PaqueteUsuario.class,user.getUsername()) == null) {
     		
       /*if (!result.next()) {
         PreparedStatement st = connect.prepareStatement(
