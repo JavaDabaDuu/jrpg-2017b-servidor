@@ -9,7 +9,7 @@
 		</id>
 		<field column="password" name="password" type="string">
 		</field>
-		<field column="idPersonaje" name="idPj" type="integer">
+		<field column="idPersonaje" name="idPj" type="int">
 		</field>
 	</class>
 </hibernate-mapping>
