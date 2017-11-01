@@ -4,7 +4,7 @@
 	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="mensajeria.PaqueteUsuario.java" table="REGISTRO">
+	<class name="mensajeria.PaqueteUsuario" table="REGISTRO">
 		<id column="usuario" name="username" type="string"> 
 		</id>
 		<field column="password" name="password" type="string">

@@ -1,5 +1,6 @@
 package servidor;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,10 +14,16 @@ import java.util.logging.Logger;
 import mensajeria.PaquetePersonaje;
 import mensajeria.PaqueteUsuario;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+
 public class Conector {
 
   private String url = "primeraBase.bd";
   Connection connect;
+  private static SessionFactory sessionFactory;
   
   public void connect() {
     try {
@@ -42,19 +49,38 @@ public class Conector {
   }
 
   public boolean registrarUsuario(PaqueteUsuario user) {
-    ResultSet result = null;
+   // ResultSet result = null;
     try {
-      PreparedStatement st1 = connect.prepareStatement("SELECT * FROM registro WHERE usuario= ? ");
+        // creamos sesion
+        sessionFactory = new Configuration().configure(new File("hibernate.cfg.xml"))
+                .buildSessionFactory();
+    } catch (Throwable ex) {
+        System.err.println("Fallo inicializacion de sesionFactory" + ex);
+        throw new ExceptionInInitializerError(ex);
+    }
+    Session session = sessionFactory.openSession();
+    
+    try {
+      /*PreparedStatement st1 = connect.prepareStatement("SELECT * FROM registro WHERE usuario= ? ");
       st1.setString(1, user.getUsername());
       result = st1.executeQuery();
-
-      if (!result.next()) {
+      */
+    	if (session.get(PaqueteUsuario.class,user.getUsername()) != null) {
+    		
+      /*if (!result.next()) {
         PreparedStatement st = connect.prepareStatement(
             "INSERT INTO registro (usuario, password, idPersonaje) VALUES (?,?,?)");
         st.setString(1, user.getUsername());
         st.setString(2, user.getPassword());
         st.setInt(3, user.getIdPj());
-        st.execute();
+        st.execute();*/
+    	  session.beginTransaction();
+    	   
+    	  session.save(user); //<|--- Aqui guardamos el objeto en la base de datos.
+    	   
+    	  session.getTransaction().commit();
+    	  session.close(); 
+    	  
         Servidor.log.append("El usuario " + user.getUsername() + " se ha registrado." 
             + System.lineSeparator());
         return true;
@@ -63,12 +89,16 @@ public class Conector {
             + System.lineSeparator());
         return false;
       }
-    } catch (SQLException ex) {
+    } catch (Throwable ex) {
+        System.err.println("Fallo inicializacion de sesionFactory" + ex);
+        throw new ExceptionInInitializerError(ex);
+    }
+    /*} catch (SQLException ex) {
       Servidor.log.append("Eror al intentar registrar el usuario " + user.getUsername() 
           + System.lineSeparator());
       System.err.println(ex.getMessage());
       return false;
-    }
+    }*/
   }
 
   public boolean registrarPersonaje(
