@@ -22,7 +22,7 @@
 			true
 		</property>
 
-		<mapping resource="hibernatePackage/persona.hbm.xml"/>
+		<mapping resource="hibernatePackage/items.hbm.xml"/>
 
 	</session-factory>
 </hibernate-configuration>
