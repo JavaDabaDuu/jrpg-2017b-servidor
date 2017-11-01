@@ -11,7 +11,7 @@
 		</property>
 
 		<property name="hibernate.connection.url">
-			jdbc:sqlite:C:\Users\LucasSecchi\git\jrpg-2017b-servidor\primeraBase.bd
+			jdbc:sqlite:primeraBase.bd
 		</property>
 
 		<property name="hibernate.dialect">
@@ -22,7 +22,7 @@
 			true
 		</property>
 
-		<mapping resource="hibernatePackage/items.hbm.xml"/>
+		<mapping resource="hibernatePackage/usuario.hbm.xml"/>
 
 	</session-factory>
 </hibernate-configuration>
