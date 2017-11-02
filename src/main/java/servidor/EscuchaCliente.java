@@ -17,10 +17,12 @@ import mensajeria.Comando;
 import mensajeria.Paquete;
 import mensajeria.PaqueteAtacar;
 import mensajeria.PaqueteBatalla;
+import mensajeria.PaqueteBatallaNPC;
 import mensajeria.PaqueteDeMovimientos;
 import mensajeria.PaqueteDeNPCS;
 import mensajeria.PaqueteDePersonajes;
 import mensajeria.PaqueteFinalizarBatalla;
+import mensajeria.PaqueteFinalizarBatallaNPC;
 import mensajeria.PaqueteMovimiento;
 import mensajeria.PaqueteNPC;
 import mensajeria.PaquetePersonaje;
@@ -38,7 +40,9 @@ public class EscuchaCliente extends Thread {
   private PaqueteMovimiento paqueteMovimiento;
   private PaqueteBatalla paqueteBatalla;
   private PaqueteAtacar paqueteAtacar;
+  private PaqueteBatallaNPC paqueteBatallaNPC;
   private PaqueteFinalizarBatalla paqueteFinalizarBatalla;
+  private PaqueteFinalizarBatallaNPC paqueteFinalizarBatallaNPC;
   private PaqueteUsuario paqueteUsuario;
   private PaqueteDeMovimientos paqueteDeMovimiento;
   private PaqueteDePersonajes paqueteDePersonajes;
@@ -197,7 +201,6 @@ public void run() {
         Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
             posIniX - decrementoX, posIniY + incrementoY));
       } else {
-
         Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i, TIPONPC, 1, 1,
             posIniX - decrementoX, posIniY - incrementoY));
       }
@@ -221,4 +224,30 @@ public void run() {
       e.printStackTrace();
     }
   }
+
+public PaqueteBatallaNPC getPaqueteBatallaNPC() {
+	return paqueteBatallaNPC;
+}
+
+public void setPaqueteBatallaNPC(PaqueteBatallaNPC paqueteBatallaNPC) {
+	this.paqueteBatallaNPC = paqueteBatallaNPC;
+}
+
+public PaqueteDeNPCS getPaqueteDeNpcs() {
+	return paqueteDeNpcs;
+}
+
+public void setPaqueteDeNpcs(PaqueteDeNPCS paqueteDeNpcs) {
+	this.paqueteDeNpcs = paqueteDeNpcs;
+}
+
+public PaqueteFinalizarBatallaNPC getPaqueteFinalizarBatallaNPC() {
+	return paqueteFinalizarBatallaNPC;
+}
+
+public void setPaqueteFinalizarBatallaNPC(PaqueteFinalizarBatallaNPC paqueteFinalizarBatallaNPC) {
+	this.paqueteFinalizarBatallaNPC = paqueteFinalizarBatallaNPC;
+}
+
+
 }
