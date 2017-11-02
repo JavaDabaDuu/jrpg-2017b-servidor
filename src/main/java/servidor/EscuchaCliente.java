@@ -64,7 +64,7 @@ public void run() {
       Paquete paquete;
       Paquete paqueteSv = new Paquete(null, 0);
       paqueteUsuario = new PaqueteUsuario();
-      inicializarNPCS();
+      
       String cadenaLeida = (String) entrada.readObject();
 
       while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class))
