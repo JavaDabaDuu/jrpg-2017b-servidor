@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -14,6 +16,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,8 +55,11 @@ public class Servidor extends Thread {
   /** The conexion DB. */
   private static Conector conexionDB;
 
+  /** The propiedades. */
+  private Properties propiedades;
+  
   /** The puerto. */
-  private static final int PUERTO = 55050;
+  private int puerto;
 
   /** The Constant ANCHO. */
   private static final  int ANCHO = 700;
@@ -190,7 +196,22 @@ public class Servidor extends Thread {
       });
     ventana.setVisible(true);
   }
-
+  
+  /**
+   * Obtener puerto.
+   *
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
+  private int obtenerPuerto() throws IOException {
+	int puerto;
+    propiedades = new Properties();
+    InputStream input = new FileInputStream("configCliente.properties");
+    propiedades.load(input);
+    puerto = Integer.parseInt(propiedades.getProperty("puerto"));
+    input.close();
+    return puerto;
+  }
+  
   /**
    * Gets the npcs activos.
    *
@@ -219,7 +240,7 @@ public class Servidor extends Thread {
       conexionDB = new Conector();
       conexionDB.connect();
       getLog().append("Iniciando el servidor..." + System.lineSeparator());
-      serverSocket = new ServerSocket(PUERTO);
+      serverSocket = new ServerSocket(obtenerPuerto());
       getLog()
           .append("Servidor esperando conexiones..." + System.lineSeparator());
       String ipRemota;
