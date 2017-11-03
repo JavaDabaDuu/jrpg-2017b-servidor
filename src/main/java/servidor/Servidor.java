@@ -276,20 +276,14 @@ public class Servidor extends Thread {
    * @return true, if successful
    */
   public static boolean mensajeAUsuario(final PaqueteMensaje pqm) {
-    boolean result = true;
-    boolean noEncontro = true;
-    for (Map.Entry<Integer,
-    PaquetePersonaje> personaje : personajesConectados.entrySet()) {
-      if (noEncontro && (!personaje.getValue()
-      .getNombre().equals(pqm.getUserReceptor()))) {
-        result = false;
-      } else {
-        result = true;
-        noEncontro = false;
+    boolean estaConectado = true;
+    for (Map.Entry<Integer,PaquetePersonaje> personaje : personajesConectados.entrySet()) {
+      if (!estaConectado && (!personaje.getValue().getNombre().equals(pqm.getUserReceptor()))) {
+        estaConectado = true;
       }
     }
     // Si existe inicio sesion
-    if (result) {
+    if (estaConectado) {
       Servidor.getLog().append(pqm.getUserEmisor()
           + " envió mensaje a " + pqm.getUserReceptor()
           + System.lineSeparator());
