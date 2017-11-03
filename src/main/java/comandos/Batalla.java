@@ -8,43 +8,54 @@ import mensajeria.PaqueteBatalla;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
+
+/**
+ * The Class Batalla.
+ */
 public class Batalla extends ComandosServer {
 
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
     // Le reenvio al id del personaje batallado que quieren pelear
-    escuchaCliente.setPaqueteBatalla((PaqueteBatalla) 
+    getEscuchaCliente().setPaqueteBatalla((PaqueteBatalla)
         gson.fromJson(cadenaLeida, PaqueteBatalla.class));
 
-    Servidor.log.append(escuchaCliente.getPaqueteBatalla().getId() + " quiere batallar con "
-        + escuchaCliente.getPaqueteBatalla().getIdEnemigo() + System.lineSeparator());
+    Servidor.getLog().append(getEscuchaCliente().getPaqueteBatalla().getId()
+        + " quiere batallar con " + getEscuchaCliente().getPaqueteBatalla()
+        .getIdEnemigo() + System.lineSeparator());
     try {
 
       // seteo estado de batalla
-      Servidor.getPersonajesConectados().get(escuchaCliente.getPaqueteBatalla().getId())
-          .setEstado(Estado.estadoBatalla);
-      Servidor.getPersonajesConectados().get(escuchaCliente.getPaqueteBatalla().getIdEnemigo())
-          .setEstado(Estado.estadoBatalla);
-      escuchaCliente.getPaqueteBatalla().setMiTurno(true);
-      escuchaCliente.getSalida().writeObject(gson.toJson(escuchaCliente.getPaqueteBatalla()));
+      Servidor.getPersonajesConectados().get(getEscuchaCliente()
+          .getPaqueteBatalla().getId()).setEstado(Estado.estadoBatalla);
+      Servidor.getPersonajesConectados().get(getEscuchaCliente()
+          .getPaqueteBatalla().getIdEnemigo()).setEstado(Estado.estadoBatalla);
+      getEscuchaCliente().getPaqueteBatalla().setMiTurno(true);
+      getEscuchaCliente().getSalida()
+          .writeObject(gson.toJson(getEscuchaCliente().getPaqueteBatalla()));
 
       for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
-        if (conectado.getIdPersonaje() == escuchaCliente.getPaqueteBatalla().getIdEnemigo()) {
-          int aux = escuchaCliente.getPaqueteBatalla().getId();
-          escuchaCliente.getPaqueteBatalla().setId(escuchaCliente.getPaqueteBatalla()
-              .getIdEnemigo());
-          escuchaCliente.getPaqueteBatalla().setIdEnemigo(aux);
-          escuchaCliente.getPaqueteBatalla().setMiTurno(false);
-          conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaqueteBatalla()));
+        if (conectado.getIdPersonaje() == getEscuchaCliente()
+        .getPaqueteBatalla().getIdEnemigo()) {
+          int aux = getEscuchaCliente().getPaqueteBatalla().getId();
+          getEscuchaCliente().getPaqueteBatalla()
+              .setId(getEscuchaCliente().getPaqueteBatalla().getIdEnemigo());
+          getEscuchaCliente().getPaqueteBatalla().setIdEnemigo(aux);
+          getEscuchaCliente().getPaqueteBatalla().setMiTurno(false);
+          conectado.getSalida().writeObject(gson
+              .toJson(getEscuchaCliente().getPaqueteBatalla()));
           break;
         }
       }
     } catch (IOException e) {
-      Servidor.log.append("Falló al intentar enviar Batalla \n");
+      Servidor.getLog().append("Falló al intentar enviar Batalla \n");
     }
 
-    synchronized (Servidor.atencionConexiones) {
-      Servidor.atencionConexiones.notify();
+    synchronized (Servidor.getAtencionConexiones()) {
+      Servidor.getAtencionConexiones().notify();
     }
   }
 }

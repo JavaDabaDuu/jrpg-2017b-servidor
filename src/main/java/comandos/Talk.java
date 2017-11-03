@@ -9,18 +9,24 @@ import mensajeria.PaquetePersonaje;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
+/**
+ * The Class Talk.
+ */
 public class Talk extends ComandosServer {
 
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
     int idUser = 0;
     int contador = 0;
-    PaqueteMensaje paqueteMensaje = (PaqueteMensaje) 
+    PaqueteMensaje paqueteMensaje = (PaqueteMensaje)
         (gson.fromJson(cadenaLeida, PaqueteMensaje.class));
     if (!(paqueteMensaje.getUserReceptor() == null)) {
       if (Servidor.mensajeAUsuario(paqueteMensaje)) {
         paqueteMensaje.setComando(Comando.TALK);
-        for (Map.Entry<Integer, PaquetePersonaje> personaje 
+        for (Map.Entry<Integer, PaquetePersonaje> personaje
             : Servidor.getPersonajesConectados().entrySet()) {
           if (personaje.getValue().getNombre().equals(paqueteMensaje
               .getUserReceptor())) {
@@ -32,18 +38,19 @@ public void ejecutar() {
             try {
               conectado.getSalida().writeObject(gson.toJson(paqueteMensaje));
             } catch (IOException e) {
-              Servidor.log.append("Falló al intentar enviar mensaje a:" 
+              Servidor.getLog().append("Falló al intentar enviar mensaje a:"
                   + conectado.getPaquetePersonaje().getId() + "\n");
             }
           }
         }
       } else {
-        Servidor.log.append("No se envió el mensaje \n");
+        Servidor.getLog().append("No se envió el mensaje \n");
       }
     } else {
       for (Map.Entry<Integer, PaquetePersonaje> personaje : Servidor
           .getPersonajesConectados().entrySet()) {
-        if (personaje.getValue().getNombre().equals(paqueteMensaje.getUserEmisor())) {
+        if (personaje.getValue().getNombre()
+        .equals(paqueteMensaje.getUserEmisor())) {
           idUser = personaje.getValue().getId();
         }
       }
@@ -52,7 +59,7 @@ public void ejecutar() {
           try {
             conectado.getSalida().writeObject(gson.toJson(paqueteMensaje));
           } catch (IOException e) {
-            Servidor.log.append("Falló al intentar enviar mensaje a:" 
+            Servidor.getLog().append("Falló al intentar enviar mensaje a:"
                 + conectado.getPaquetePersonaje().getId() + "\n");
           }
         }

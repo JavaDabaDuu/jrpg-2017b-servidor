@@ -6,20 +6,30 @@ import mensajeria.PaqueteNPC;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
+/**
+ * The Class ActualizarNPC.
+ */
 public class ActualizarNPC extends ComandosServer {
+
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
-    escuchaCliente.setPaqueteNpc((PaqueteNPC) gson.fromJson(cadenaLeida, PaqueteNPC.class));
-    Servidor.getNpcsActivos().remove(escuchaCliente.getPaqueteNpc().getId());
-    Servidor.getNpcsActivos().put(escuchaCliente.getPaqueteNpc().getId(), 
-        escuchaCliente.getPaqueteNpc());
+    getEscuchaCliente().setPaqueteNpc((PaqueteNPC) gson.fromJson(
+        cadenaLeida, PaqueteNPC.class));
+    Servidor.getNpcsActivos()
+        .remove(getEscuchaCliente().getPaqueteNpc().getId());
+    Servidor.getNpcsActivos().put(getEscuchaCliente()
+        .getPaqueteNpc().getId(), getEscuchaCliente().getPaqueteNpc());
 
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       try {
-        conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaqueteNpc()));
+        conectado.getSalida()
+            .writeObject(gson.toJson(getEscuchaCliente().getPaqueteNpc()));
       } catch (IOException e) {
-        Servidor.log.append(
-            "Falló al intentar enviar paqueteNPC a:"  
+        Servidor.getLog().append(
+            "Falló al intentar enviar paqueteNPC a:"
               + conectado.getPaquetePersonaje().getId() + "\n");
       }
     }

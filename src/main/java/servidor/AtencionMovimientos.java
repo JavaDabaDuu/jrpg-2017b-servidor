@@ -6,13 +6,23 @@ import estados.Estado;
 import mensajeria.Comando;
 import mensajeria.PaqueteDeMovimientos;
 
+/**
+ * The Class AtencionMovimientos.
+ */
 public class AtencionMovimientos extends Thread {
 
+  /** The gson. */
   private final Gson gson = new Gson();
 
+  /**
+   * Instantiates a new atencion movimientos.
+   */
   public AtencionMovimientos() {
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Thread#run()
+   */
   @Override
 public void run() {
 
@@ -23,9 +33,11 @@ public void run() {
           wait();
           // Le reenvio la conexion a todos
           for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
-            if (conectado.getPaquetePersonaje().getEstado() == Estado.estadoJuego) {
-              PaqueteDeMovimientos pdp = (PaqueteDeMovimientos) 
-                  new PaqueteDeMovimientos(Servidor.getUbicacionPersonajes()).clone();
+            if (conectado.getPaquetePersonaje().getEstado()
+            == Estado.estadoJuego) {
+              PaqueteDeMovimientos pdp = (PaqueteDeMovimientos)
+                  new PaqueteDeMovimientos(Servidor
+                  .getUbicacionPersonajes()).clone();
               pdp.setComando(Comando.MOVIMIENTO);
               synchronized (conectado) {
                 conectado.getSalida().writeObject(gson.toJson(pdp));
@@ -34,7 +46,8 @@ public void run() {
           }
         }
       } catch (Exception e) {
-        Servidor.log.append("Falló al intentar enviar paqueteDeMovimientos \n");
+        Servidor.getLog().append(
+            "Falló al intentar enviar paqueteDeMovimientos \n");
       }
     }
   }

@@ -6,23 +6,35 @@ import mensajeria.PaquetePersonaje;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
+/**
+ * The Class ActualizarPersonajeLvl.
+ */
 public class ActualizarPersonajeLvl extends ComandosServer {
 
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
-    escuchaCliente.setPaquetePersonaje((PaquetePersonaje) 
+    getEscuchaCliente().setPaquetePersonaje((PaquetePersonaje)
         gson.fromJson(cadenaLeida, PaquetePersonaje.class));
-    Servidor.getConector().actualizarPersonajeSubioNivel(escuchaCliente.getPaquetePersonaje());
-    Servidor.getPersonajesConectados().remove(escuchaCliente.getPaquetePersonaje().getId());
-    Servidor.getPersonajesConectados().put(escuchaCliente.getPaquetePersonaje().getId(),
-        escuchaCliente.getPaquetePersonaje());
-    escuchaCliente.getPaquetePersonaje().ponerBonus();
-    escuchaCliente.getPaquetePersonaje().actualizarPuntosPorNivel();
+    Servidor.getConector()
+        .actualizarPersonajeSubioNivel(
+        getEscuchaCliente().getPaquetePersonaje());
+    Servidor.getPersonajesConectados()
+        .remove(getEscuchaCliente().getPaquetePersonaje().getId());
+    Servidor.getPersonajesConectados()
+        .put(getEscuchaCliente().getPaquetePersonaje().getId(),
+        getEscuchaCliente().getPaquetePersonaje());
+    getEscuchaCliente().getPaquetePersonaje().ponerBonus();
+    getEscuchaCliente().getPaquetePersonaje().actualizarPuntosPorNivel();
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       try {
-        conectado.getSalida().writeObject(gson.toJson(escuchaCliente.getPaquetePersonaje()));
+        conectado.getSalida()
+            .writeObject(gson
+            .toJson(getEscuchaCliente().getPaquetePersonaje()));
       } catch (IOException e) {
-        Servidor.log.append("Falló al intentar enviar paquetePersonaje a:" 
+        Servidor.getLog().append("Falló al intentar enviar paquetePersonaje a:"
             + conectado.getPaquetePersonaje().getId() + "\n");
       }
     }

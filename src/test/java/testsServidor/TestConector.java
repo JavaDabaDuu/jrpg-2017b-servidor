@@ -14,19 +14,31 @@ import org.junit.Test;
 import servidor.Conector;
 import servidor.Servidor;
 
+/**
+ * The Class TestConector.
+ */
 public class TestConector {
+
+  /**
+   * Gets the random string.
+   *
+   * @return the random string
+   */
   private String getRandomString() {
-    String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    String sALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     StringBuilder salt = new StringBuilder();
     Random rnd = new Random();
     while (salt.length() < 8) { // length of the random string.
-      int index = (int) (rnd.nextFloat() * SALTCHARS.length());
-      salt.append(SALTCHARS.charAt(index));
+      int index = (int) (rnd.nextFloat() * sALTCHARS.length());
+      salt.append(sALTCHARS.charAt(index));
     }
     String saltStr = salt.toString();
     return saltStr;
   }
-  
+
+  /**
+   * Test conexion con la DB.
+   */
   @Test
   public void testConexionConLaDB() {
     new Servidor();
@@ -39,6 +51,9 @@ public class TestConector {
     conector.close();
   }
 
+  /**
+   * Test registrar usuario.
+   */
   @Test
 public void testRegistrarUsuario() {
     new Servidor();
@@ -54,6 +69,11 @@ public void testRegistrarUsuario() {
     conector.close();
   }
 
+  /**
+   * Test registrar personaje.
+   *
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
   @Test
 public void testRegistrarPersonaje() throws IOException {
     new Servidor();
@@ -85,6 +105,9 @@ public void testRegistrarPersonaje() throws IOException {
     conector.close();
   }
 
+  /**
+   * Test login usuario.
+   */
   @Test
 public void testLoginUsuario() {
     new Servidor();
@@ -106,6 +129,9 @@ public void testLoginUsuario() {
     conector.close();
   }
 
+  /**
+   * Test login usuario fallido.
+   */
   @Test
 public void testLoginUsuarioFallido() {
     new Servidor();

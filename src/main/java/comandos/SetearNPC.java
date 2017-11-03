@@ -7,13 +7,22 @@ import mensajeria.PaqueteNPC;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
+/**
+ * The Class SetearNPC.
+ */
 public class SetearNPC extends ComandosServer {
+
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
-    PaqueteDeNPCS paqueteDeNpcs = (PaqueteDeNPCS) gson.fromJson(cadenaLeida, PaqueteDeNPCS.class);
+    PaqueteDeNPCS paqueteDeNpcs = (PaqueteDeNPCS) gson
+        .fromJson(cadenaLeida, PaqueteDeNPCS.class);
     paqueteDeNpcs.getNpcs().putAll(Servidor.getNpcsActivos());
     try {
-      escuchaCliente.getSalida().writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
+      getEscuchaCliente().getSalida()
+          .writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
     } catch (IOException e) {
       e.printStackTrace();
     }

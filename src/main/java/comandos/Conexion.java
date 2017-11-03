@@ -4,19 +4,28 @@ import mensajeria.PaqueteMovimiento;
 import mensajeria.PaquetePersonaje;
 import servidor.Servidor;
 
+/**
+ * The Class Conexion.
+ */
 public class Conexion extends ComandosServer {
+
+  /* (non-Javadoc)
+   * @see mensajeria.Comando#ejecutar()
+   */
   @Override
 public void ejecutar() {
-    escuchaCliente.setPaquetePersonaje((PaquetePersonaje) 
+    getEscuchaCliente().setPaquetePersonaje((PaquetePersonaje)
         (gson.fromJson(cadenaLeida, PaquetePersonaje.class)).clone());
 
-    Servidor.getPersonajesConectados().put(escuchaCliente.getPaquetePersonaje().getId(), 
-        (PaquetePersonaje) escuchaCliente.getPaquetePersonaje().clone());
-    Servidor.getUbicacionPersonajes().put(escuchaCliente.getPaquetePersonaje().getId(),
-        (PaqueteMovimiento) new PaqueteMovimiento(escuchaCliente.getPaquetePersonaje()
+    Servidor.getPersonajesConectados().put(getEscuchaCliente()
+        .getPaquetePersonaje().getId(), (PaquetePersonaje)
+        getEscuchaCliente().getPaquetePersonaje().clone());
+    Servidor.getUbicacionPersonajes().put(getEscuchaCliente()
+        .getPaquetePersonaje().getId(), (PaqueteMovimiento)
+        new PaqueteMovimiento(getEscuchaCliente().getPaquetePersonaje()
             .getId()).clone());
-    synchronized (Servidor.atencionConexiones) {
-      Servidor.atencionConexiones.notify();
+    synchronized (Servidor.getAtencionConexiones()) {
+      Servidor.getAtencionConexiones().notify();
     }
   }
 }

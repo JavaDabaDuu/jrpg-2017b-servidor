@@ -6,13 +6,22 @@ import estados.Estado;
 import mensajeria.Comando;
 import mensajeria.PaqueteDePersonajes;
 
+/**
+ * The Class AtencionConexiones.
+ */
 public class AtencionConexiones extends Thread {
 
+  /** The gson. */
   private final Gson gson = new Gson();
 
+  /**
+   * Instantiates a new atencion conexiones.
+   */
   public AtencionConexiones() {
   }
-  
+  /* (non-Javadoc)
+   * @see java.lang.Thread#run()
+   */
   @Override
   public void run() {
 
@@ -23,9 +32,11 @@ public class AtencionConexiones extends Thread {
           wait();
           // Le reenvio la conexion a todos
           for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
-            if (conectado.getPaquetePersonaje().getEstado() != Estado.estadoOffline) {
-              PaqueteDePersonajes pdp = (PaqueteDePersonajes) 
-                  new PaqueteDePersonajes(Servidor.getPersonajesConectados()).clone();
+            if (conectado.getPaquetePersonaje().getEstado()
+            != Estado.estadoOffline) {
+              PaqueteDePersonajes pdp = (PaqueteDePersonajes)
+                  new PaqueteDePersonajes(Servidor
+                  .getPersonajesConectados()).clone();
               pdp.setComando(Comando.CONEXION);
               synchronized (conectado) {
                 conectado.getSalida().writeObject(
@@ -35,7 +46,8 @@ public class AtencionConexiones extends Thread {
           }
         }
       } catch (Exception e) {
-        Servidor.log.append("Falló al intentar enviar paqueteDePersonajes\n");
+        Servidor.getLog()
+            .append("Falló al intentar enviar paqueteDePersonajes\n");
       }
     }
   }
