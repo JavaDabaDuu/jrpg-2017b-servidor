@@ -34,7 +34,7 @@ public void run() {
           // Le reenvio la conexion a todos
           for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
             if (conectado.getPaquetePersonaje().getEstado()
-            == Estado.estadoJuego) {
+            == Estado.getEstadoJuego()) {
               PaqueteDeMovimientos pdp = (PaqueteDeMovimientos)
                   new PaqueteDeMovimientos(Servidor
                   .getUbicacionPersonajes()).clone();

@@ -17,18 +17,18 @@ public class BatallaNPC extends ComandosServer {
   @Override
 public void ejecutar() {
     getEscuchaCliente().setPaqueteBatallaNPC((PaqueteBatallaNPC)
-        gson.fromJson(cadenaLeida, PaqueteBatallaNPC.class));
+        getGson().fromJson(getCadenaLeida(), PaqueteBatallaNPC.class));
 
     Servidor.getLog().append(getEscuchaCliente().getPaqueteBatallaNPC().getId()
         + " va a pelear con Enemigo " + getEscuchaCliente()
         .getPaqueteBatallaNPC().getIdEnemigo() + "\n");
     try {
       Servidor.getPersonajesConectados().get(getEscuchaCliente()
-          .getPaqueteBatallaNPC().getId()).setEstado(Estado.estadoBatallaNPC);
+          .getPaqueteBatallaNPC().getId()).setEstado(Estado.getEstadoBatallaNPC());
       Servidor.getNpcsActivos().get(getEscuchaCliente().getPaqueteBatallaNPC()
-          .getIdEnemigo()).setEstado(Estado.estadoBatallaNPC);
+          .getIdEnemigo()).setEstado(Estado.getEstadoBatallaNPC());
       getEscuchaCliente().getPaqueteBatallaNPC().setMiTurno(true);
-      getEscuchaCliente().getSalida().writeObject(gson.toJson(
+      getEscuchaCliente().getSalida().writeObject(getGson().toJson(
           getEscuchaCliente().getPaqueteBatallaNPC()));
     } catch (Exception e) {
       Servidor.getLog().append("Falló al intentar enviar Batalla NPC \n");

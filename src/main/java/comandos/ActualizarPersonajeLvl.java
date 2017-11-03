@@ -17,7 +17,7 @@ public class ActualizarPersonajeLvl extends ComandosServer {
   @Override
 public void ejecutar() {
     getEscuchaCliente().setPaquetePersonaje((PaquetePersonaje)
-        gson.fromJson(cadenaLeida, PaquetePersonaje.class));
+        getGson().fromJson(getCadenaLeida(), PaquetePersonaje.class));
     Servidor.getConector()
         .actualizarPersonajeSubioNivel(
         getEscuchaCliente().getPaquetePersonaje());
@@ -31,7 +31,7 @@ public void ejecutar() {
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       try {
         conectado.getSalida()
-            .writeObject(gson
+            .writeObject(getGson()
             .toJson(getEscuchaCliente().getPaquetePersonaje()));
       } catch (IOException e) {
         Servidor.getLog().append("Falló al intentar enviar paquetePersonaje a:"

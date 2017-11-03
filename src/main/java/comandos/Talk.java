@@ -22,7 +22,7 @@ public void ejecutar() {
     int idUser = 0;
     int contador = 0;
     PaqueteMensaje paqueteMensaje = (PaqueteMensaje)
-        (gson.fromJson(cadenaLeida, PaqueteMensaje.class));
+        (getGson().fromJson(getCadenaLeida(), PaqueteMensaje.class));
     if (!(paqueteMensaje.getUserReceptor() == null)) {
       if (Servidor.mensajeAUsuario(paqueteMensaje)) {
         paqueteMensaje.setComando(Comando.TALK);
@@ -36,7 +36,7 @@ public void ejecutar() {
         for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
           if (conectado.getIdPersonaje() == idUser) {
             try {
-              conectado.getSalida().writeObject(gson.toJson(paqueteMensaje));
+              conectado.getSalida().writeObject(getGson().toJson(paqueteMensaje));
             } catch (IOException e) {
               Servidor.getLog().append("Falló al intentar enviar mensaje a:"
                   + conectado.getPaquetePersonaje().getId() + "\n");
@@ -57,7 +57,7 @@ public void ejecutar() {
       for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
         if (conectado.getIdPersonaje() != idUser) {
           try {
-            conectado.getSalida().writeObject(gson.toJson(paqueteMensaje));
+            conectado.getSalida().writeObject(getGson().toJson(paqueteMensaje));
           } catch (IOException e) {
             Servidor.getLog().append("Falló al intentar enviar mensaje a:"
                 + conectado.getPaquetePersonaje().getId() + "\n");

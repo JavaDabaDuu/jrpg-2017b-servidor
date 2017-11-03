@@ -17,12 +17,12 @@ public class SetearNPC extends ComandosServer {
    */
   @Override
 public void ejecutar() {
-    PaqueteDeNPCS paqueteDeNpcs = (PaqueteDeNPCS) gson
-        .fromJson(cadenaLeida, PaqueteDeNPCS.class);
+    PaqueteDeNPCS paqueteDeNpcs = (PaqueteDeNPCS) getGson()
+        .fromJson(getCadenaLeida(), PaqueteDeNPCS.class);
     paqueteDeNpcs.getNpcs().putAll(Servidor.getNpcsActivos());
     try {
       getEscuchaCliente().getSalida()
-          .writeObject(gson.toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
+          .writeObject(getGson().toJson(paqueteDeNpcs, PaqueteDeNPCS.class));
     } catch (IOException e) {
       e.printStackTrace();
     }

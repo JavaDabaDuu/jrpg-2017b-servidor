@@ -22,7 +22,7 @@ public void ejecutar() {
     paqueteSv.setComando(Comando.INICIOSESION);
     // Recibo el paquete usuario
     getEscuchaCliente().setPaqueteUsuario((PaqueteUsuario)
-        (gson.fromJson(cadenaLeida, PaqueteUsuario.class)));
+        (getGson().fromJson(getCadenaLeida(), PaqueteUsuario.class)));
     // Si se puede loguear el usuario le envio un mensaje de exito
     //y el paquete personaje con los datos
     try {
@@ -32,14 +32,14 @@ public void ejecutar() {
         paquetePersonaje = Servidor.getConector()
             .getPersonaje(getEscuchaCliente().getPaqueteUsuario());
         paquetePersonaje.setComando(Comando.INICIOSESION);
-        paquetePersonaje.setMensaje(Paquete.msjExito);
+        paquetePersonaje.setMensaje(Paquete.getMsjExito());
         getEscuchaCliente().setIdPersonaje(paquetePersonaje.getId());
         getEscuchaCliente().getSalida()
-            .writeObject(gson.toJson(paquetePersonaje));
+            .writeObject(getGson().toJson(paquetePersonaje));
 
       } else {
-        paqueteSv.setMensaje(Paquete.msjFracaso);
-        getEscuchaCliente().getSalida().writeObject(gson.toJson(paqueteSv));
+        paqueteSv.setMensaje(Paquete.getMsjFracaso());
+        getEscuchaCliente().getSalida().writeObject(getGson().toJson(paqueteSv));
       }
     } catch (IOException e) {
       Servidor.getLog().append("Falló al intentar iniciar sesión \n");

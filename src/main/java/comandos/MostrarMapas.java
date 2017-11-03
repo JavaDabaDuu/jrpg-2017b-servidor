@@ -14,7 +14,7 @@ public class MostrarMapas extends ComandosServer {
   @Override
     public void ejecutar() {
     getEscuchaCliente().setPaquetePersonaje((PaquetePersonaje)
-          gson.fromJson(cadenaLeida, PaquetePersonaje.class));
+          getGson().fromJson(getCadenaLeida(), PaquetePersonaje.class));
     Servidor.getLog().append(getEscuchaCliente().getSocket().getInetAddress()
         .getHostAddress() + " ha elegido el mapa "
         + getEscuchaCliente().getPaquetePersonaje().getMapa()

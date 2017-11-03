@@ -16,8 +16,8 @@ public class ActualizarNPC extends ComandosServer {
    */
   @Override
 public void ejecutar() {
-    getEscuchaCliente().setPaqueteNpc((PaqueteNPC) gson.fromJson(
-        cadenaLeida, PaqueteNPC.class));
+    getEscuchaCliente().setPaqueteNpc((PaqueteNPC) getGson().fromJson(
+        getCadenaLeida(), PaqueteNPC.class));
     Servidor.getNpcsActivos()
         .remove(getEscuchaCliente().getPaqueteNpc().getId());
     Servidor.getNpcsActivos().put(getEscuchaCliente()
@@ -26,7 +26,7 @@ public void ejecutar() {
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       try {
         conectado.getSalida()
-            .writeObject(gson.toJson(getEscuchaCliente().getPaqueteNpc()));
+            .writeObject(getGson().toJson(getEscuchaCliente().getPaqueteNpc()));
       } catch (IOException e) {
         Servidor.getLog().append(
             "Falló al intentar enviar paqueteNPC a:"

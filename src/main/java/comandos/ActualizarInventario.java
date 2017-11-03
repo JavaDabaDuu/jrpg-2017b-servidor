@@ -17,7 +17,7 @@ public class ActualizarInventario extends ComandosServer {
   @Override
 public void ejecutar() {
     getEscuchaCliente().setPaquetePersonaje((PaquetePersonaje)
-        gson.fromJson(cadenaLeida, PaquetePersonaje.class));
+        getGson().fromJson(getCadenaLeida(), PaquetePersonaje.class));
     Servidor.getConector()
         .actualizarInventario(getEscuchaCliente().getPaquetePersonaje());
     Servidor.getPersonajesConectados()
@@ -28,7 +28,7 @@ public void ejecutar() {
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       try {
         conectado.getSalida().writeObject(
-            gson.toJson(getEscuchaCliente().getPaquetePersonaje()));
+            getGson().toJson(getEscuchaCliente().getPaquetePersonaje()));
       } catch (IOException e) {
         Servidor.getLog().append("Falló al intentar enviar paquetePersonaje a:"
             + conectado.getPaquetePersonaje().getId() + "\n");

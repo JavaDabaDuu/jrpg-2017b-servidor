@@ -21,7 +21,7 @@ public class Batalla extends ComandosServer {
 public void ejecutar() {
     // Le reenvio al id del personaje batallado que quieren pelear
     getEscuchaCliente().setPaqueteBatalla((PaqueteBatalla)
-        gson.fromJson(cadenaLeida, PaqueteBatalla.class));
+        getGson().fromJson(getCadenaLeida(), PaqueteBatalla.class));
 
     Servidor.getLog().append(getEscuchaCliente().getPaqueteBatalla().getId()
         + " quiere batallar con " + getEscuchaCliente().getPaqueteBatalla()
@@ -30,12 +30,12 @@ public void ejecutar() {
 
       // seteo estado de batalla
       Servidor.getPersonajesConectados().get(getEscuchaCliente()
-          .getPaqueteBatalla().getId()).setEstado(Estado.estadoBatalla);
+          .getPaqueteBatalla().getId()).setEstado(Estado.getEstadoBatalla());
       Servidor.getPersonajesConectados().get(getEscuchaCliente()
-          .getPaqueteBatalla().getIdEnemigo()).setEstado(Estado.estadoBatalla);
+          .getPaqueteBatalla().getIdEnemigo()).setEstado(Estado.getEstadoBatalla());
       getEscuchaCliente().getPaqueteBatalla().setMiTurno(true);
       getEscuchaCliente().getSalida()
-          .writeObject(gson.toJson(getEscuchaCliente().getPaqueteBatalla()));
+          .writeObject(getGson().toJson(getEscuchaCliente().getPaqueteBatalla()));
 
       for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
         if (conectado.getIdPersonaje() == getEscuchaCliente()
@@ -45,7 +45,7 @@ public void ejecutar() {
               .setId(getEscuchaCliente().getPaqueteBatalla().getIdEnemigo());
           getEscuchaCliente().getPaqueteBatalla().setIdEnemigo(aux);
           getEscuchaCliente().getPaqueteBatalla().setMiTurno(false);
-          conectado.getSalida().writeObject(gson
+          conectado.getSalida().writeObject(getGson()
               .toJson(getEscuchaCliente().getPaqueteBatalla()));
           break;
         }

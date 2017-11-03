@@ -26,7 +26,7 @@ public void ejecutar() {
     }
     // Lo elimino de los clientes conectados
     Servidor.getClientesConectados().remove(this);
-    Paquete paquete = (Paquete) gson.fromJson(cadenaLeida, Paquete.class);
+    Paquete paquete = (Paquete) getGson().fromJson(getCadenaLeida(), Paquete.class);
     // Indico que se desconecto
     Servidor.getLog().append(paquete.getIp() + " se ha desconectado."
         + System.lineSeparator());

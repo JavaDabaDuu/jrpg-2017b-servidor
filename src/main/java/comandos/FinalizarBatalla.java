@@ -17,21 +17,21 @@ public class FinalizarBatalla extends ComandosServer {
   @Override
 public void ejecutar() {
     PaqueteFinalizarBatalla paqueteFinalizarBatalla = (PaqueteFinalizarBatalla)
-        gson.fromJson(cadenaLeida, PaqueteFinalizarBatalla.class);
+        getGson().fromJson(getCadenaLeida(), PaqueteFinalizarBatalla.class);
     getEscuchaCliente().setPaqueteFinalizarBatalla(paqueteFinalizarBatalla);
     Servidor.getConector().actualizarInventario(
         paqueteFinalizarBatalla.getGanadorBatalla());
     Servidor.getPersonajesConectados().get(getEscuchaCliente()
         .getPaqueteFinalizarBatalla().getId())
-        .setEstado(Estado.estadoJuego);
+        .setEstado(Estado.getEstadoJuego());
     Servidor.getPersonajesConectados().get(getEscuchaCliente()
         .getPaqueteFinalizarBatalla()
-        .getIdEnemigo()).setEstado(Estado.estadoJuego);
+        .getIdEnemigo()).setEstado(Estado.getEstadoJuego());
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       if (conectado.getIdPersonaje() == getEscuchaCliente()
           .getPaqueteFinalizarBatalla().getIdEnemigo()) {
         try {
-          conectado.getSalida().writeObject(gson.toJson(getEscuchaCliente()
+          conectado.getSalida().writeObject(getGson().toJson(getEscuchaCliente()
               .getPaqueteFinalizarBatalla()));
         } catch (IOException e) {
           Servidor.getLog().append(
