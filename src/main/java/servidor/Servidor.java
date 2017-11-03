@@ -310,12 +310,8 @@ public class Servidor extends Thread {
    * @return true, if successful
    */
   public static boolean mensajeAAll(final int contador) {
-    boolean result = true;
-    if (personajesConectados.size() != contador + 1) {
-      result = false;
-    }
     // Si existe inicio sesion
-    if (result) {
+    if (personajesConectados.size() == (contador + 1)) {
       Servidor.getLog().append("Se ha enviado un mensaje a todos los usuarios"
       + System.lineSeparator());
       return true;
