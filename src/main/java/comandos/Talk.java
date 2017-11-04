@@ -1,3 +1,4 @@
+
 package comandos;
 
 import java.io.IOException;
@@ -36,7 +37,8 @@ public void ejecutar() {
         for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
           if (conectado.getIdPersonaje() == idUser) {
             try {
-              conectado.getSalida().writeObject(getGson().toJson(paqueteMensaje));
+              conectado.getSalida()
+                  .writeObject(getGson().toJson(paqueteMensaje));
             } catch (IOException e) {
               Servidor.getLog().append("Falló al intentar enviar mensaje a:"
                   + conectado.getPaquetePersonaje().getId() + "\n");

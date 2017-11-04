@@ -1,3 +1,4 @@
+
 package servidor;
 
 import java.io.File;
@@ -80,47 +81,47 @@ public class Conector {
    * @return true, if successful
    */
   public boolean registrarUsuario(final PaqueteUsuario user) {
-	Configuration cfg = new Configuration();
-	cfg.configure("hibernate.cfg.xml");
-	SessionFactory factory = cfg.buildSessionFactory();
-	Session session = factory.openSession();
-		
-	HibernateUtil.openThreadSession(session);
-		
-	
-	CriteriaBuilder cBuilder = session.getCriteriaBuilder();
-	CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
-	Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
-		
-		
-	cQuery.select(root).where(cBuilder.equal(root.get("username"), user.getUsername()));
-		
-		
-	if(session.createQuery(cQuery).getResultList().isEmpty()) {
-		
-		Transaction transaccion = session.beginTransaction();
-		try{
-			session.save(user);
-			transaccion.commit();
-				
-			} catch (HibernateException e) {
-				if (transaccion != null)
-					transaccion.rollback();
-				e.printStackTrace();
-				
-				HibernateUtil.closeThreadSession(session, factory);	
-				Servidor.getLog().append("Eror al intentar registrar el usuario " + user.getUsername() + System.lineSeparator());
-				return false;
-			}
-		} else {
-			HibernateUtil.closeThreadSession(session, factory);		
-			Servidor.getLog().append("El Nombre de usuario " + user.getUsername() + " ya se encuentra en uso." + System.lineSeparator());
-			return false;
-		}
-		
-		HibernateUtil.closeThreadSession(session, factory);
-		Servidor.getLog().append("El usuario " + user.getUsername() + " se ha registrado." + System.lineSeparator());
-		return true;
+  Configuration cfg = new Configuration();
+  cfg.configure("hibernate.cfg.xml");
+  SessionFactory factory = cfg.buildSessionFactory();
+  Session session = factory.openSession();
+
+  HibernateUtil.openThreadSession(session);
+
+  CriteriaBuilder cBuilder = session.getCriteriaBuilder();
+  CriteriaQuery<PaqueteUsuario> cQuery = cBuilder
+      .createQuery(PaqueteUsuario.class);
+  Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
+
+  cQuery.select(root).where(cBuilder.equal(root.get("username"),
+      user.getUsername()));
+
+  if (session.createQuery(cQuery).getResultList().isEmpty()) {
+    Transaction transaccion = session.beginTransaction();
+    try {
+      session.save(user);
+      transaccion.commit();
+    } catch (HibernateException e) {
+    if (transaccion != null) {
+      transaccion.rollback();
+    }
+    e.printStackTrace();
+    HibernateUtil.closeThreadSession(session, factory);
+    Servidor.getLog().append("Eror al intentar registrar el usuario "
+        + user.getUsername() + System.lineSeparator());
+    return false;
+    }
+  } else {
+    HibernateUtil.closeThreadSession(session, factory);
+      Servidor.getLog().append("El Nombre de usuario "
+      + user.getUsername() + " ya se encuentra en uso."
+      + System.lineSeparator());
+    return false;
+  }
+  HibernateUtil.closeThreadSession(session, factory);
+  Servidor.getLog().append("El usuario " + user.getUsername()
+    + " se ha registrado." + System.lineSeparator());
+  return true;
   }
 
   /**
@@ -537,7 +538,7 @@ public class Conector {
       stActualizarPersonaje.executeUpdate();
       Servidor.getLog().append("El personaje "
           + paquetePersonaje.getNombre() + " se ha actualizado con éxito."
-          + System.lineSeparator());;
+          + System.lineSeparator());
     } catch (SQLException e) {
       Servidor.getLog().append("Fallo al intentar actualizar el personaje "
           + paquetePersonaje.getNombre()  + System.lineSeparator());

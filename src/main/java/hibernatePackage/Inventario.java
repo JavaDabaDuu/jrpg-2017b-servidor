@@ -1,74 +1,164 @@
+
 package hibernatePackage;
 
+/**
+ * The Class Inventario.
+ */
 public class Inventario {
-		private int idInventario;
-		private int manos1;
-		private int manos2;
-		private int pie;
-		private int cabeza;
-		private int pecho;
-		private int accesorio;
-		
-		public Inventario() {
-			
-		}
 
-		public int getidInventario() {
-			return idInventario;
-		}
-					   
-		public void setidInventario(int idInventario) {
-			this.idInventario = idInventario;
-		}
+  /** The id inventario. */
+  private int idInventario;
+  
+  /** The manos 1. */
+  private int manos1;
+  
+  /** The manos 2. */
+  private int manos2;
+  
+  /** The pie. */
+  private int pie;
+  
+  /** The cabeza. */
+  private int cabeza;
+  
+  /** The pecho. */
+  private int pecho;
+  
+  /** The accesorio. */
+  private int accesorio;
 
-		public int getmanos1() {
-			return manos1;
-		}
+  /**
+   * Instantiates a new inventario.
+   */
+  public Inventario() {
 
-		public void setmanos1(int manos1) {
-			this.manos1 = manos1;
-		}
+  }
 
-		public int getmanos2() {
-			return manos2;
-		}
+  /**
+   * Gets the id inventario.
+   *
+   * @return the id inventario
+   */
+  public int getidInventario() {
+    return idInventario;
+  }
 
-		public void setmanos2(int manos2) {
-			this.manos2 = manos2;
-		}
+  /**
+   * Sets the id inventario.
+   *
+   * @param idInventarioAux the new id inventario
+   */
+  public void setidInventario(final int idInventarioAux) {
+    this.idInventario = idInventarioAux;
+  }
 
-		public int getpie() {
-			return pie;
-		}
+  /**
+   * Gets the manos 1.
+   *
+   * @return the manos 1
+   */
+  public int getmanos1() {
+    return manos1;
+  }
 
-		public void setpie(int pie) {
-			this.pie = pie;
-		}
+  /**
+   * Sets the manos 1.
+   *
+   * @param manos1Aux the new manos 1
+   */
+  public void setmanos1(final int manos1Aux) {
+    this.manos1 = manos1Aux;
+  }
 
-		public int getcabeza() {
-			return cabeza;
-		}
+  /**
+   * Gets the manos 2.
+   *
+   * @return the manos 2
+   */
+  public int getmanos2() {
+    return manos2;
+  }
 
-		public void setcabeza(int cabeza) {
-			this.cabeza = cabeza;
-		}
+  /**
+   * Sets the manos 2.
+   *
+   * @param manos2Aux the new manos 2
+   */
+  public void setmanos2(final int manos2Aux) {
+    this.manos2 = manos2Aux;
+   }
 
-		public int getpecho() {
-			return pecho;
-		}
+   /**
+    * Gets the pie.
+    *
+    * @return the pie
+    */
+   public int getpie() {
+     return pie;
+   }
 
-		public void setpecho(int pecho) {
-			this.pecho = pecho;
-		}
+   /**
+    * Sets the pie.
+    *
+    * @param pieAux the new pie
+    */
+   public void setpie(final int pieAux) {
+     this.pie = pieAux;
+   }
 
-		public int getaccesorio() {
-			return accesorio;
-		}
+   /**
+    * Gets the cabeza.
+    *
+    * @return the cabeza
+    */
+   public int getcabeza() {
+     return cabeza;
+   }
 
-		public void setaccesorio(int accesorio) {
-			this.accesorio = accesorio;
-		}
-		
-		
-	}
+   /**
+    * Sets the cabeza.
+    *
+    * @param cabezaAux the new cabeza
+    */
+   public void setcabeza(final int cabezaAux) {
+     this.cabeza = cabezaAux;
+   }
+
+   /**
+    * Gets the pecho.
+    *
+    * @return the pecho
+    */
+   public int getpecho() {
+     return pecho;
+   }
+
+   /**
+    * Sets the pecho.
+    *
+    * @param pechoAux the new pecho
+    */
+   public void setpecho(final int pechoAux) {
+     this.pecho = pechoAux;
+   }
+
+   /**
+    * Gets the accesorio.
+    *
+    * @return the accesorio
+    */
+   public int getaccesorio() {
+     return accesorio;
+   }
+
+   /**
+    * Sets the accesorio.
+    *
+    * @param accesorioAux the new accesorio
+    */
+   public void setaccesorio(final int accesorioAux) {
+     this.accesorio = accesorioAux;
+   }
+
+  }
 

@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
 	<class name="mensajeria.PaqueteUsuario" table="REGISTRO">
-		<id column="usuario" name="username" type="string"> 
+		<id column="usuario" name="username" type="string">
 		</id>
 		<field column="password" name="password" type="string">
 		</field>

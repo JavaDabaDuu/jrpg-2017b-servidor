@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package comandos;
 
 import mensajeria.PaquetePersonaje;

@@ -6,19 +6,25 @@ import mensajeria.PaqueteFinalizarBatallaNPC;
 import mensajeria.PaqueteMovimiento;
 import servidor.Servidor;
 
-public class FinalizarBatallaNPC extends ComandosServer{
+/**
+ * The Class FinalizarBatallaNPC.
+ */
+public class FinalizarBatallaNPC extends ComandosServer {
 
+	/* (non-Javadoc)
+	 * @see mensajeria.Comando#ejecutar()
+	 */
 	@Override
 	public void ejecutar() {
 		// TODO Auto-generated method stub
-		
+
 		PaqueteFinalizarBatallaNPC paqueteFinalizarBatalla = (PaqueteFinalizarBatallaNPC)getGson().fromJson(getCadenaLeida(), PaqueteFinalizarBatallaNPC.class); 
 		getEscuchaCliente().setPaqueteFinalizarBatallaNPC(paqueteFinalizarBatalla);
 		Servidor.getPersonajesConectados().get(getEscuchaCliente().getPaqueteFinalizarBatallaNPC().getId()).setEstado(Estado.getEstadoJuego());
 		float x = 0;
 		float y = 0;
-		boolean agrego=false;
-		while(!agrego){
+		boolean agrego = false;
+		while (!agrego) {
 			Iterator<Integer> it = Servidor.getUbicacionPersonajes().keySet().iterator();
 			int key;
 			PaqueteMovimiento actual;
@@ -34,7 +40,7 @@ public class FinalizarBatallaNPC extends ComandosServer{
 				}
 			}
 				if(personajeCerca==false)
-					agrego=true;	
+					agrego=true;
 		}
 			if(agrego) {
 				int id_enemigo = getEscuchaCliente().getPaqueteFinalizarBatallaNPC().getIdEnemigo();
@@ -42,7 +48,7 @@ public class FinalizarBatallaNPC extends ComandosServer{
 				Servidor.getNpcsActivos().get(id_enemigo).setPosY(y);
 				Servidor.getNpcsActivos().get(id_enemigo).setEstado(Estado.getEstadoJuego());
 			}
-		synchronized(Servidor.getAtencionConexiones()){
+		synchronized(Servidor.getAtencionConexiones()) {
 		Servidor.getAtencionConexiones().notify();
 				}
 			}

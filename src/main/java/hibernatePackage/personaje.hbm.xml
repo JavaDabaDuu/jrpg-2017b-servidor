@@ -5,8 +5,7 @@
 	<class name="mensajeria.PaquetePersonaje" table="personaje">
 		<id column="iDPersonaje" name="id" type="int">
 		<generator class="increment"/></id>
-		
-		
+
 		<property column="casta" name="casta" type="string"/>
 		<property column="raza" name="raza" type="string"/>
 		<property column="fuerza" name="fuerza" type="int"/>
@@ -19,7 +18,6 @@
 		<property column="nivel" name="nivel" type="int"/>
 		<property column="idInventario" name="idInventario" type="int"/>
 		<property column="idMochila" name="idMochila" type="int"/>
-		
-		
+
 	</class>
 </hibernate-mapping>

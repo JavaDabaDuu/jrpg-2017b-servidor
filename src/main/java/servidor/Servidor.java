@@ -1,3 +1,4 @@
+
 package servidor;
 
 import java.awt.Font;
@@ -57,7 +58,7 @@ public class Servidor extends Thread {
 
   /** The propiedades. */
   private Properties propiedades;
-  
+
   /** The puerto. */
   private int puerto;
 
@@ -196,22 +197,23 @@ public class Servidor extends Thread {
       });
     ventana.setVisible(true);
   }
-  
+
   /**
    * Obtener puerto.
    *
+   * @return the int
    * @throws IOException Signals that an I/O exception has occurred.
    */
   private int obtenerPuerto() throws IOException {
-	int puerto;
+    int puertoAux;
     propiedades = new Properties();
     InputStream input = new FileInputStream("configCliente.properties");
     propiedades.load(input);
-    puerto = Integer.parseInt(propiedades.getProperty("puerto"));
+    puertoAux = Integer.parseInt(propiedades.getProperty("puerto"));
     input.close();
-    return puerto;
+    return puertoAux;
   }
-  
+
   /**
    * Gets the npcs activos.
    *
@@ -277,8 +279,10 @@ public class Servidor extends Thread {
    */
   public static boolean mensajeAUsuario(final PaqueteMensaje pqm) {
     boolean estaConectado = true;
-    for (Map.Entry<Integer,PaquetePersonaje> personaje : personajesConectados.entrySet()) {
-      if (!estaConectado && (!personaje.getValue().getNombre().equals(pqm.getUserReceptor()))) {
+    for (Map.Entry<Integer, PaquetePersonaje> personaje : personajesConectados
+    .entrySet()) {
+      if (!estaConectado && (!personaje.getValue().getNombre()
+      .equals(pqm.getUserReceptor()))) {
         estaConectado = true;
       }
     }
@@ -411,8 +415,5 @@ public class Servidor extends Thread {
  final AtencionMovimientos atencionMovimientosAux) {
     Servidor.atencionMovimientos = atencionMovimientosAux;
 }
-
-
-  
 
 }

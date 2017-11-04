@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package comandos;
 
 import java.io.IOException;
@@ -26,11 +29,13 @@ public void ejecutar() {
       if (Servidor.getConector().registrarUsuario(getEscuchaCliente()
       .getPaqueteUsuario())) {
         paqueteSv.setMensaje(Paquete.getMsjExito());
-        getEscuchaCliente().getSalida().writeObject(getGson().toJson(paqueteSv));
+        getEscuchaCliente().getSalida()
+            .writeObject(getGson().toJson(paqueteSv));
         // Si el usuario no se pudo registrar le envio un msj de fracaso
       } else {
         paqueteSv.setMensaje(Paquete.getMsjFracaso());
-        getEscuchaCliente().getSalida().writeObject(getGson().toJson(paqueteSv));
+        getEscuchaCliente().getSalida()
+            .writeObject(getGson().toJson(paqueteSv));
       }
     } catch (IOException e) {
       Servidor.getLog().append("Falló al intentar enviar registro\n");

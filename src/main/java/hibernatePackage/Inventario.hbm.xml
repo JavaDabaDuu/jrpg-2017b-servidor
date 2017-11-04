@@ -5,14 +5,13 @@
 	<class name="hibernatePackage.Inventario" table="inventario">
 		<id column="idInventario" name="idInventario" type="int">
 		<generator class="increment"/></id>
-		
-		
+
 		<property column="manos1" name="manos1" type="int"/>
 		<property column="manos2" name="manos2" type="int"/>
 		<property column="pie" name="pie" type="int"/>
 		<property column="cabeza" name="cabeza" type="int"/>
 		<property column="pecho" name="pecho" type="int"/>
 		<property column="accesorio" name="accesorio" type="int"/>
-		
+
 	</class>
 </hibernate-mapping>

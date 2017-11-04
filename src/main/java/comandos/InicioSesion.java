@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package comandos;
 
 import java.io.IOException;
@@ -39,7 +42,8 @@ public void ejecutar() {
 
       } else {
         paqueteSv.setMensaje(Paquete.getMsjFracaso());
-        getEscuchaCliente().getSalida().writeObject(getGson().toJson(paqueteSv));
+        getEscuchaCliente().getSalida()
+          .writeObject(getGson().toJson(paqueteSv));
       }
     } catch (IOException e) {
       Servidor.getLog().append("Falló al intentar iniciar sesión \n");
