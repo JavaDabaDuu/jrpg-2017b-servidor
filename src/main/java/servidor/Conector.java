@@ -179,12 +179,13 @@ public class Conector {
               + " ha creado el personaje " + paquetePersonaje.getId()
               + System.lineSeparator());
           return true;
+        } else {
+          Servidor.getLog().append(
+              "Error al registrar la mochila y el inventario del usuario "
+              + paqueteUsuario.getUsername() + " con el personaje"
+              + paquetePersonaje.getId() + System.lineSeparator());
         }
       }
-      Servidor.getLog().append(
-          "Error al registrar la mochila y el inventario del usuario "
-          + paqueteUsuario.getUsername() + " con el personaje"
-          + paquetePersonaje.getId() + System.lineSeparator());
       return false;
     } catch (SQLException e) {
       Servidor.getLog().append("Error al intentar crear el personaje "
@@ -268,6 +269,7 @@ public class Conector {
       Servidor.getLog().append("El usuario " + user.getUsername()
           + " ha realizado un intento fallido de inicio de sesión."
           + System.lineSeparator());
+
       return false;
 
     } catch (SQLException e) {
