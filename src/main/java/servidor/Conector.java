@@ -11,12 +11,20 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import mensajeria.PaquetePersonaje;
 import mensajeria.PaqueteUsuario;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import hibernatePackage.HibernateUtil;
 
 
 /**
@@ -72,57 +80,47 @@ public class Conector {
    * @return true, if successful
    */
   public boolean registrarUsuario(final PaqueteUsuario user) {
-   // ResultSet result = null;
-    try {
-        // creamos sesion
-        sessionFactory = new Configuration()
-            .configure(new File("hibernate.cfg.xml"))
-                .buildSessionFactory();
-    } catch (Throwable ex) {
-        System.err.println("Fallo inicializacion de sesionFactory" + ex);
-        throw new ExceptionInInitializerError(ex);
-    }
-    Session session = sessionFactory.openSession();
-    try {
-      /*PreparedStatement st1 = connect.prepareStatement(
-       * "SELECT * FROM registro WHERE usuario= ? ");
-      st1.setString(1, user.getUsername());
-      result = st1.executeQuery();
-      */
-      if (session.get(PaqueteUsuario.class, user.getUsername()) == null) {
-
-      /*if (!result.next()) {
-        PreparedStatement st = connect.prepareStatement(
-        "INSERT INTO registro (usuario, password, idPersonaje) VALUES (?,?,?)");
-        st.setString(1, user.getUsername());
-        st.setString(2, user.getPassword());
-        st.setInt(3, user.getIdPj());
-        st.execute();*/
-      session.beginTransaction();
-
-      session.save(user); //<|--- Aqui guardamos el objeto en la base de datos.
-
-      session.getTransaction().commit();
-      session.close();
-
-      Servidor.getLog().append("El usuario " + user.getUsername()
-          + " se ha registrado." + System.lineSeparator());
-        return true;
-      }
-      Servidor.getLog().append("El usuario " + user.getUsername()
-          + " ya se encuentra en uso." + System.lineSeparator());
-      return false;
-    } catch (Throwable ex) {
-        System.err.println("Fallo inicializacion de sesionFactory" + ex);
-        throw new ExceptionInInitializerError(ex);
-    }
-    /*} catch (SQLException ex) {
-    Servidor.log.append("Eror al intentar registrar el usuario "
-    + user.getUsername()
-          + System.lineSeparator());
-      System.err.println(ex.getMessage());
-      return false;
-    }*/
+	Configuration cfg = new Configuration();
+	cfg.configure("hibernate.cfg.xml");
+	SessionFactory factory = cfg.buildSessionFactory();
+	Session session = factory.openSession();
+		
+	HibernateUtil.openThreadSession(session);
+		
+	
+	CriteriaBuilder cBuilder = session.getCriteriaBuilder();
+	CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
+	Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
+		
+		
+	cQuery.select(root).where(cBuilder.equal(root.get("username"), user.getUsername()));
+		
+		
+	if(session.createQuery(cQuery).getResultList().isEmpty()) {
+		
+		Transaction transaccion = session.beginTransaction();
+		try{
+			session.save(user);
+			transaccion.commit();
+				
+			} catch (HibernateException e) {
+				if (transaccion != null)
+					transaccion.rollback();
+				e.printStackTrace();
+				
+				HibernateUtil.closeThreadSession(session, factory);	
+				Servidor.getLog().append("Eror al intentar registrar el usuario " + user.getUsername() + System.lineSeparator());
+				return false;
+			}
+		} else {
+			HibernateUtil.closeThreadSession(session, factory);		
+			Servidor.getLog().append("El Nombre de usuario " + user.getUsername() + " ya se encuentra en uso." + System.lineSeparator());
+			return false;
+		}
+		
+		HibernateUtil.closeThreadSession(session, factory);
+		Servidor.getLog().append("El usuario " + user.getUsername() + " se ha registrado." + System.lineSeparator());
+		return true;
   }
 
   /**
