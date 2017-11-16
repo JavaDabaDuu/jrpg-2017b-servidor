@@ -57,7 +57,7 @@ public class Conector {
 			connect = DriverManager.getConnection("jdbc:sqlite:" + url);
 			Servidor.getLog().append("Conexión con la base de datos establecida con éxito." + System.lineSeparator());
 			
-			/*try{
+			try{
 				//configuramos hibernate segun nuestro xml de configuracion
 				Configuration cfg = new Configuration();
 				cfg.configure("hibernate.cfg.xml");
@@ -66,7 +66,7 @@ public class Conector {
 		    { 
 		        Servidor.getLog().append("Ocurrió un error en la inicialización de la SessionFactory: " + he); 
 		        throw new ExceptionInInitializerError(he); 
-		    }*/
+		    }
 		} catch (SQLException ex) {
 			Servidor.getLog().append("Fallo al intentar establecer la conexión con la base de datos. " + ex.getMessage()
 					+ System.lineSeparator());
@@ -117,10 +117,8 @@ public class Conector {
 				if (transaccion != null)
 					transaccion.rollback();
 				e.printStackTrace();
-				session.close();
-
-				Servidor.getLog().append("Eror al intentar registrar el usuario " + user.getUsername() + System.lineSeparator());
-				return false;
+				Servidor.getLog().append("Ocurrió un error al Registrar Usuario " + e); 
+		        throw new ExceptionInInitializerError(e);
 			}
 		} else {
 			session.close();
