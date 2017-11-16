@@ -23,8 +23,6 @@ import mensajeria.PaqueteDeMovimientos;
 import mensajeria.PaqueteDeNPCS;
 import mensajeria.PaqueteDePersonajes;
 import mensajeria.PaqueteFinalizarBatalla;
-import mensajeria.PaqueteFinalizarBatallaNPC;
-//import mensajeria.PaqueteFinalizarBatallaNPC;
 import mensajeria.PaqueteMovimiento;
 import mensajeria.PaqueteNPC;
 import mensajeria.PaquetePersonaje;
@@ -67,9 +65,6 @@ public class EscuchaCliente extends Thread {
 
   /** The paquete finalizar batalla. */
   private PaqueteFinalizarBatalla paqueteFinalizarBatalla;
-
-  /** The paquete finalizar batalla NPC. */
-  private PaqueteFinalizarBatallaNPC paqueteFinalizarBatallaNPC;
 
   /** The paquete usuario. */
   private PaqueteUsuario paqueteUsuario;
@@ -443,25 +438,6 @@ public PaqueteDeNPCS getPaqueteDeNpcs() {
  */
 public void setPaqueteDeNpcs(final PaqueteDeNPCS paqueteDeNpcsAux) {
    this.paqueteDeNpcs = paqueteDeNpcsAux;
-}
-
-/**
- * Gets the paquete finalizar batalla NPC.
- *
- * @return the paquete finalizar batalla NPC
- */
-public PaqueteFinalizarBatallaNPC getPaqueteFinalizarBatallaNPC() {
-   return paqueteFinalizarBatallaNPC;
-}
-
-/**
- * Sets the paquete finalizar batalla NPC.
- *
- * @param paqueteFinalizarBatallaNPCAux the new paquete finalizar batalla NPC
- */
-public void setPaqueteFinalizarBatallaNPC(
-final PaqueteFinalizarBatallaNPC paqueteFinalizarBatallaNPCAux) {
-    this.paqueteFinalizarBatallaNPC = paqueteFinalizarBatallaNPCAux;
 }
 
 }
