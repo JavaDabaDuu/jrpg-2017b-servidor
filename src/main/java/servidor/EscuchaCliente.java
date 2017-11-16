@@ -360,16 +360,16 @@ public void run() {
     for (int i = 0; i < CANTIDADNPCS; i++) {
       // quedan estas cuentas raras para que queden las
       // ubicaciones mas o menos como las habian puesto los chicos
-      if (i == 0) {
-        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc"
-            + i, TIPONPC, 1, 1, posIniX, posIniY));
-      } else if (i < 7) {
-        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
-            TIPONPC, 1, 1, posIniX - decrementoX, posIniY + incrementoY));
-      } else {
-        Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
-            TIPONPC, 1, 1, posIniX - decrementoX, posIniY - incrementoY));
-      }
+  	  if (i == 0) {
+          Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc"
+              + i, TIPONPC, 1, 1, posIniX, posIniY));
+        } else if (i < 7) {
+          Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
+              TIPONPC, 1, i+1, posIniX - decrementoX, posIniY + incrementoY));
+        } else {
+          Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
+              TIPONPC, 1, 7, posIniX - decrementoX, posIniY - incrementoY));
+        }
     }
   }
 
