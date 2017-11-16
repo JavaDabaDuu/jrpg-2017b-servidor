@@ -17,6 +17,9 @@
 		<property name="format_sql">true</property>
 		
 		<mapping resource="hibernate/usuario.hbm.xml" />
+		<mapping resource="hibernate/personaje.hbm.xml" />
+		<mapping resource="hibernate/inventario.hbm.xml" />
+		<mapping resource="hibernate/mochila.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
