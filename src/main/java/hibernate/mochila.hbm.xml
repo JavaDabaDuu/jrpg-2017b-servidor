@@ -2,9 +2,11 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="hibernatePackage.Mochila" table="mochila">
+	<class name="hibernate.Mochila" table="mochila">
 		<id column="idMochila" name="idMochila" type="int">
 		<generator class="increment"/></id>
+		
+		
 		<property column="item1" name="item1" type="int"/>
 		<property column="item2" name="item2" type="int"/>
 		<property column="item3" name="item3" type="int"/>
@@ -25,6 +27,7 @@
 		<property column="item18" name="item18" type="int"/>
 		<property column="item19" name="item19" type="int"/>
 		<property column="item20" name="item20" type="int"/>
-
+		
+		
 	</class>
 </hibernate-mapping>
