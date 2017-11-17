@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -113,8 +114,7 @@ public class Conector {
 			try {
 				session.save(user);
 				transaccion.commit();
-				
-				
+
 			} catch (HibernateException e) {
 				if (transaccion != null)
 					transaccion.rollback();
@@ -172,7 +172,7 @@ public class Conector {
 			session.update(paquetePersonaje);
 			session.update(m);
 			transaccion.commit();
-			
+
 			Servidor.getLog().append("se ha creado el personaje " + paquetePersonaje.getId() + System.lineSeparator());
 
 			session.close();
@@ -199,6 +199,8 @@ public class Conector {
 	 *            the user
 	 * @return true, if successful
 	 */
+
+	@Transactional
 	public boolean loguearUsuario(final PaqueteUsuario user) {
 		String pwConsulta;
 		String pwPaqueteUsuario;
@@ -210,7 +212,7 @@ public class Conector {
 			CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
 			Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
 
-			// busco usuario con el nomre ingresado
+			// busco usuario con el nombre ingresado
 			cQuery.select(root).where(cBuilder.equal(root.get("username"), user.getUsername()));
 
 			pwConsulta = session.createQuery(cQuery).getResultList().remove(0).getPassword();
@@ -221,7 +223,7 @@ public class Conector {
 
 				Servidor.getLog()
 						.append("El usuario " + user.getUsername() + " ha iniciado sesión." + System.lineSeparator());
-				
+
 				return true;
 			}
 			return false;
@@ -231,7 +233,9 @@ public class Conector {
 			Servidor.getLog().append(e.getMessage() + System.lineSeparator());
 			return false;
 		} finally {
+
 			session.close();
+
 		}
 	}
 
@@ -371,20 +375,30 @@ public class Conector {
 	 * @return the usuario
 	 */
 	public PaqueteUsuario getUsuario(final String usuario) {
-		ResultSet result = null;
-		PreparedStatement st;
+		String password;
+		int idPersonaje;
+		Session session = getSessionFactory().openSession();
+
 		try {
-			st = connect.prepareStatement("SELECT * FROM registro WHERE usuario = ?");
-			st.setString(1, usuario);
-			result = st.executeQuery();
-			String password = result.getString("password");
-			int idPersonaje = result.getInt("idPersonaje");
+			CriteriaBuilder cBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
+			Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
+
+			// busco usuario con el nombre ingresado
+			cQuery.select(root).where(cBuilder.equal(root.get("username"), usuario));
+
+			// guardo los atributos que me trajo el select
+			password = session.createQuery(cQuery).getResultList().remove(0).getPassword();
+			idPersonaje = session.createQuery(cQuery).getResultList().remove(0).getIdPj();
+
 			PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
+
 			paqueteUsuario.setUsername(usuario);
 			paqueteUsuario.setPassword(password);
 			paqueteUsuario.setIdPj(idPersonaje);
 			return paqueteUsuario;
-		} catch (SQLException e) {
+
+		} catch (HibernateException e) {
 			Servidor.getLog().append("Fallo al intentar recuperar el usuario " + usuario + System.lineSeparator());
 			Servidor.getLog().append(e.getMessage() + System.lineSeparator());
 		}
@@ -466,7 +480,7 @@ public class Conector {
 	 *            the paquete personaje
 	 */
 	public void actualizarPersonajeSubioNivel(final PaquetePersonaje paquetePersonaje) {
-		
+
 		Session session = getSessionFactory().openSession();
 
 		Transaction transaccion = session.beginTransaction();
@@ -476,8 +490,9 @@ public class Conector {
 			session.update(paquetePersonaje);
 
 			transaccion.commit();
-			
-			Servidor.getLog().append("se ha Actualizado el Personaje" + paquetePersonaje.getId() + System.lineSeparator());
+
+			Servidor.getLog()
+					.append("se ha Actualizado el Personaje" + paquetePersonaje.getId() + System.lineSeparator());
 
 			session.close();
 
