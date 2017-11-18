@@ -25,9 +25,9 @@ public void ejecutar() {
     Servidor.getPersonajesConectados().get(getEscuchaCliente()
         .getPaqueteFinalizarBatalla().getId())
         .setEstado(Estado.getEstadoJuego());
-    Servidor.getPersonajesConectados().get(getEscuchaCliente()
-        .getPaqueteFinalizarBatalla()
-        .getIdEnemigo()).setEstado(Estado.getEstadoJuego());
+    Servidor.getNpcsActivos().get(getEscuchaCliente()
+            .getPaqueteFinalizarBatalla()
+            .getIdEnemigo()).setEstado	(Estado.getEstadoJuego());
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       if (conectado.getIdPersonaje() == getEscuchaCliente()
           .getPaqueteFinalizarBatalla().getIdEnemigo()) {
