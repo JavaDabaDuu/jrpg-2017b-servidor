@@ -22,12 +22,21 @@ public void ejecutar() {
     getEscuchaCliente().setPaqueteFinalizarBatalla(paqueteFinalizarBatalla);
     Servidor.getConector().actualizarInventario(
         paqueteFinalizarBatalla.getGanadorBatalla());
-    Servidor.getPersonajesConectados().get(getEscuchaCliente()
-        .getPaqueteFinalizarBatalla().getId())
-        .setEstado(Estado.getEstadoJuego());
-    Servidor.getNpcsActivos().get(getEscuchaCliente()
-            .getPaqueteFinalizarBatalla()
-            .getIdEnemigo()).setEstado	(Estado.getEstadoJuego());
+  
+    if(Servidor.getPersonajesConectados().get(getEscuchaCliente().getPaqueteFinalizarBatalla().getId()).getEstado() == Estado.getEstadoBatalla()) {    	  
+    	    Servidor.getPersonajesConectados().get(getEscuchaCliente().
+    	    		getPaqueteFinalizarBatalla().getIdEnemigo()).
+    	    setEstado(Estado.getEstadoJuego());    	
+    }else {  	
+    	 Servidor.getNpcsActivos().get(getEscuchaCliente()
+    	            .getPaqueteFinalizarBatalla()
+    	            .getIdEnemigo()).setEstado	(Estado.getEstadoJuego());
+    }
+
+	  Servidor.getPersonajesConectados().get(getEscuchaCliente()
+		        .getPaqueteFinalizarBatalla().getId())
+		        .setEstado(Estado.getEstadoJuego());
+   
     for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
       if (conectado.getIdPersonaje() == getEscuchaCliente()
           .getPaqueteFinalizarBatalla().getIdEnemigo()) {
