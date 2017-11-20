@@ -20,17 +20,19 @@ public void ejecutar() {
     PaqueteFinalizarBatalla paqueteFinalizarBatalla = (PaqueteFinalizarBatalla)
         getGson().fromJson(getCadenaLeida(), PaqueteFinalizarBatalla.class);
     getEscuchaCliente().setPaqueteFinalizarBatalla(paqueteFinalizarBatalla);
-    Servidor.getConector().actualizarInventario(
-        paqueteFinalizarBatalla.getGanadorBatalla());
   
     if(Servidor.getPersonajesConectados().get(getEscuchaCliente().getPaqueteFinalizarBatalla().getId()).getEstado() == Estado.getEstadoBatalla()) {    	  
     	    Servidor.getPersonajesConectados().get(getEscuchaCliente().
     	    		getPaqueteFinalizarBatalla().getIdEnemigo()).
-    	    setEstado(Estado.getEstadoJuego());    	
+    	    setEstado(Estado.getEstadoJuego());   
+    	    
+    	    //Solo gano items cuando le gano a otro jugador, no a un NPC
+    	    Servidor.getConector().actualizarInventario(
+    	            paqueteFinalizarBatalla.getGanadorBatalla());
     }else {  	
     	 Servidor.getNpcsActivos().get(getEscuchaCliente()
     	            .getPaqueteFinalizarBatalla()
-    	            .getIdEnemigo()).setEstado	(Estado.getEstadoJuego());
+    	            .getIdEnemigo()).setEstado(Estado.getEstadoJuego());
     }
 
 	  Servidor.getPersonajesConectados().get(getEscuchaCliente()

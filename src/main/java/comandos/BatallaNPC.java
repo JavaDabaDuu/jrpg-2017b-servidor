@@ -1,8 +1,12 @@
 package comandos;
 
+import java.io.IOException;
+
 import estados.Estado;
+import mensajeria.Comando;
 import mensajeria.PaqueteBatallaNPC;
 import mensajeria.PaqueteNPC;
+import servidor.EscuchaCliente;
 import servidor.Servidor;
 
 
@@ -30,6 +34,25 @@ public void ejecutar() {
       getEscuchaCliente().getPaqueteBatallaNPC().setMiTurno(true);
       getEscuchaCliente().getSalida().writeObject(getGson().toJson(
           getEscuchaCliente().getPaqueteBatallaNPC()));
+      
+      PaqueteNPC paqueteNPC = Servidor.getNpcsActivos().get(getEscuchaCliente()
+    		  							.getPaqueteBatallaNPC().getIdEnemigo());
+     
+      //Con esto mando el id del npc que tiene que desaparecer
+      paqueteNPC.setComando(Comando.DESAPARECERNPC);
+
+      for (EscuchaCliente conectado : Servidor.getClientesConectados()) {
+     	   try {
+     		   //Por cada cliente conectado envio el id
+                conectado.getSalida().writeObject(getGson()
+                    .toJson(paqueteNPC));
+                
+             } catch (IOException e) {
+              Servidor.getLog().append("Falló al intentar enviar"
+              + "DesaparecerEnemigo a:"
+              + conectado.getPaquetePersonaje().getId() + "\n");
+             }
+      } 
     } catch (Exception e) {
       Servidor.getLog().append("Falló al intentar enviar Batalla NPC \n");
     }
