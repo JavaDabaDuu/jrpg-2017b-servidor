@@ -25,6 +25,7 @@ import mensajeria.PaqueteUsuario;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
+import hibernate.HibernateUtil;
 import hibernate.Inventario;
 import hibernate.Mochila;
 
@@ -60,16 +61,16 @@ public class Conector {
 			connect = DriverManager.getConnection("jdbc:sqlite:" + url);
 			Servidor.getLog().append("Conexión con la base de datos establecida con éxito." + System.lineSeparator());
 
-			try {
-				// configuramos hibernate segun nuestro xml de configuracion
-				Configuration cfg = new Configuration();
-				cfg.configure("hibernate.cfg.xml");
-				Servidor.getLog().append("Inicializando SessionFactory..." + System.lineSeparator());
-				this.setSessionFactory(cfg.buildSessionFactory());
-			} catch (HibernateException he) {
-				Servidor.getLog().append("Ocurrió un error en la inicialización de la SessionFactory: " + he);
-				throw new ExceptionInInitializerError(he);
-			}
+			HibernateUtil.buildSessionFactory();
+			/*
+			 * try { // configuramos hibernate segun nuestro xml de configuracion
+			 * Configuration cfg = new Configuration(); cfg.configure("hibernate.cfg.xml");
+			 * Servidor.getLog().append("Inicializando SessionFactory..." +
+			 * System.lineSeparator()); this.setSessionFactory(cfg.buildSessionFactory()); }
+			 * catch (HibernateException he) { Servidor.getLog().
+			 * append("Ocurrió un error en la inicialización de la SessionFactory: " + he);
+			 * throw new ExceptionInInitializerError(he); }
+			 */
 		} catch (SQLException ex) {
 			Servidor.getLog().append("Fallo al intentar establecer la conexión con la base de datos. " + ex.getMessage()
 					+ System.lineSeparator());
@@ -97,41 +98,49 @@ public class Conector {
 	 * @return true, if successful
 	 */
 	public boolean registrarUsuario(final PaqueteUsuario user) {
+		
+		try {
+			// abrimos session
+			HibernateUtil.openSessionAndBindToThread();
 
-		// abrimos session
-		Session session = getSessionFactory().openSession();
+			Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+			// generamos consulta
+			CriteriaBuilder cBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
+			Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
 
-		// generamos consulta
-		CriteriaBuilder cBuilder = session.getCriteriaBuilder();
-		CriteriaQuery<PaqueteUsuario> cQuery = cBuilder.createQuery(PaqueteUsuario.class);
-		Root<PaqueteUsuario> root = cQuery.from(PaqueteUsuario.class);
+			cQuery.select(root).where(cBuilder.equal(root.get("username"), user.getUsername()));
 
-		cQuery.select(root).where(cBuilder.equal(root.get("username"), user.getUsername()));
+			if (session.createQuery(cQuery).getResultList().isEmpty()) {
 
-		if (session.createQuery(cQuery).getResultList().isEmpty()) {
+				Transaction transaccion = session.beginTransaction();
+				try {
+					session.save(user);
+					transaccion.commit();
 
-			Transaction transaccion = session.beginTransaction();
-			try {
-				session.save(user);
-				transaccion.commit();
-
-			} catch (HibernateException e) {
-				if (transaccion != null)
-					transaccion.rollback();
-				e.printStackTrace();
-				Servidor.getLog().append("Ocurrió un error al Registrar Usuario " + e);
-				throw new ExceptionInInitializerError(e);
+				} catch (HibernateException e) {
+					if (transaccion != null)
+						transaccion.rollback();
+					e.printStackTrace();
+					Servidor.getLog().append("Ocurrió un error al Registrar Usuario " + e);
+					throw new ExceptionInInitializerError(e);
+				}
+			} else {
+				session.close();
+				Servidor.getLog().append(
+						"El usuario " + user.getUsername() + " ya se encuentra en uso." + System.lineSeparator());
+				return false;
 			}
-		} else {
+
 			session.close();
 			Servidor.getLog()
-					.append("El usuario " + user.getUsername() + " ya se encuentra en uso." + System.lineSeparator());
-			return false;
+					.append("El usuario " + user.getUsername() + " se ha registrado." + System.lineSeparator());
+			return true;
+
+		} finally {
+			HibernateUtil.closeSessionAndUnbindFromThread();
 		}
 
-		session.close();
-		Servidor.getLog().append("El usuario " + user.getUsername() + " se ha registrado." + System.lineSeparator());
-		return true;
 	}
 
 	/**
