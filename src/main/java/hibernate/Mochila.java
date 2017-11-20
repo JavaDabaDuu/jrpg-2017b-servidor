@@ -23,9 +23,11 @@ public class Mochila {
 	private int item18;
 	private int item19;
 	private int item20;
-	
-	
-	
+
+	public Mochila() {
+
+	}
+
 	public Mochila(int idMochila) {
 		this.idMochila = idMochila;
 		this.item1 = -1;
@@ -218,68 +220,47 @@ public class Mochila {
 		this.item20 = item20;
 	}
 
-	private static final int SLOT1 = 1;
-	private static final int SLOT2 = 2;
-	private static final int SLOT3 = 3;
-	private static final int SLOT4 = 4;
-	private static final int SLOT5 = 5;
-	private static final int SLOT6 = 6;
-	private static final int SLOT7 = 7;
-	private static final int SLOT8 = 8;
-	private static final int SLOT9 = 9;
-	private static final int SLOT10 = 10;
-	private static final int SLOT11 = 11;
-	private static final int SLOT12 = 12;
-	private static final int SLOT13 = 13;
-	private static final int SLOT14 = 14;
-	private static final int SLOT15 = 15;
-	private static final int SLOT16 = 16;
-	private static final int SLOT17 = 17;
-	private static final int SLOT18 = 18;
-	private static final int SLOT19 = 19;
-	private static final int SLOT20 = 20;
-
-	public int getByItemId(final int i) {
+	public int getItemId(final int i) {
 		switch (i) {
-		case SLOT1:
+		case 1:
 			return getItem1();
-		case SLOT2:
+		case 2:
 			return getItem2();
-		case SLOT3:
+		case 3:
 			return getItem3();
-		case SLOT4:
+		case 4:
 			return getItem4();
-		case SLOT5:
+		case 5:
 			return getItem5();
-		case SLOT6:
+		case 6:
 			return getItem6();
-		case SLOT7:
+		case 7:
 			return getItem7();
-		case SLOT8:
+		case 8:
 			return getItem8();
-		case SLOT9:
+		case 9:
 			return getItem9();
-		case SLOT10:
+		case 10:
 			return getItem10();
-		case SLOT11:
+		case 11:
 			return getItem11();
-		case SLOT12:
+		case 12:
 			return getItem12();
-		case SLOT13:
+		case 13:
 			return getItem13();
-		case SLOT14:
+		case 14:
 			return getItem14();
-		case SLOT15:
+		case 15:
 			return getItem15();
-		case SLOT16:
+		case 16:
 			return getItem16();
-		case SLOT17:
+		case 17:
 			return getItem17();
-		case SLOT18:
+		case 18:
 			return getItem18();
-		case SLOT19:
+		case 19:
 			return getItem19();
-		case SLOT20:
+		case 20:
 			return getItem20();
 		default:
 			break;
@@ -315,4 +296,52 @@ public class Mochila {
 		this.item20 = item20;
 	}
 
+	public void setItem(final int pos, final int item) {
+
+		switch (pos) {
+		case 1:
+			setItem1(item);
+		case 2:
+			setItem2(item);
+		case 3:
+			setItem3(item);
+		case 4:
+			setItem4(item);
+		case 5:
+			setItem5(item);
+		case 6:
+			setItem6(item);
+		case 7:
+			setItem7(item);
+		case 8:
+			setItem8(item);
+		case 9:
+			setItem9(item);
+		case 10:
+			setItem10(item);
+		case 11:
+			setItem11(item);
+		case 12:
+			setItem12(item);
+		case 13:
+			setItem13(item);
+		case 14:
+			setItem14(item);
+		case 15:
+			setItem15(item);
+		case 16:
+			setItem16(item);
+		case 17:
+			setItem17(item);
+		case 18:
+			setItem18(item);
+		case 19:
+			setItem19(item);
+		case 20:
+			setItem20(item);
+		default:
+			break;
+		}
+
+	}
 }

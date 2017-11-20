@@ -20,6 +20,7 @@
 		<mapping resource="hibernate/personaje.hbm.xml" />
 		<mapping resource="hibernate/inventario.hbm.xml" />
 		<mapping resource="hibernate/mochila.hbm.xml" />
+		<mapping resource="hibernate/item.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
