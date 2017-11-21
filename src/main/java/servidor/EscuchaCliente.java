@@ -86,7 +86,13 @@ public class EscuchaCliente extends Thread {
 
   /** The Constant TIPONPC. */
   private static final String TIPONPC = "npc";
-
+  
+  /**Posiciones en x de los npcs*/
+  private static final int[] posXnpc = {544,160,672,416,160,-192,-224,-576,-32,832};
+  
+  /**Posiciones en Y de los npcs*/
+  private static final int[] posYnpc = {304,496,720,880,752,672,464,544,1072,1024};
+  
   /**
    * Instantiates a new escucha cliente.
    *
@@ -352,23 +358,16 @@ public void run() {
    * Inicializar NPCS.
    */
   public static void inicializarNPCS() {
-    int posIniX = 800;
-    int posIniY = 1041;
-
-    int decrementoX = 405;
-    int incrementoY = 150;
     for (int i = 0; i < CANTIDADNPCS; i++) {
-      // quedan estas cuentas raras para que queden las
-      // ubicaciones mas o menos como las habian puesto los chicos
   	  if (i == 0) {
           Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc"
-              + i, TIPONPC, 1, 1, posIniX, posIniY));
+              + i, TIPONPC, 1, 1, posXnpc[i],posYnpc[i]));
         } else if (i < 7) {
           Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
-              TIPONPC, 1, i+1, posIniX - decrementoX, posIniY + incrementoY));
+              TIPONPC, 1, i+1,posXnpc[i],posYnpc[i]));
         } else {
           Servidor.getNpcsActivos().put(i, new PaqueteNPC(i, "Npc" + i,
-              TIPONPC, 1, 7, posIniX - decrementoX, posIniY - incrementoY));
+              TIPONPC, 1, 7, posXnpc[i],posYnpc[i]));
         }
     }
   }
