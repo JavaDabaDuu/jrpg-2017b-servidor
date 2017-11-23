@@ -244,23 +244,27 @@ public class Conector {
 
 			//query.executeUpdate();
 
-			// me traigo la mochila del personaje
+			// me traigo la mochila del personaje con sus items
 			Query queryMochila = session.createQuery("FROM Mochila WHERE idMochila = :idMochila");
 			queryMochila.setParameter("idMochila", paquetePersonaje.getId());
-
+			
+			//pasos los items que tiene la mochila a la lista
 			List<Mochila> resultadoItemsIDList = queryMochila.list();
 
 			Query queryitem;
 
 			Mochila resultadoItemsID;
-
+			
 			if (resultadoItemsIDList != null && !resultadoItemsIDList.isEmpty()) {
-
+				
+				//guardo mi primir item de la lsita
 				resultadoItemsID = resultadoItemsIDList.get(0);
-
+				
+				//
 				while (j <= CANTITEMS) {
 					if (resultadoItemsID.getItemId(i) != -1) {
-
+						
+						//busco el item segun el id y se lo añado al persona
 						queryitem = session.createQuery("FROM MyItem WHERE idItem = :idItem");
 						queryitem.setParameter("idItem", resultadoItemsID.getItemId(i));
 
@@ -331,19 +335,22 @@ public class Conector {
 
 			Mochila resultadoItemsID;
 			dbPersonaje.eliminarItems();
+			
 			// si tiene items se los añado
 			if (resultadoItemsIDList != null && !resultadoItemsIDList.isEmpty()) {
 
 				resultadoItemsID = resultadoItemsIDList.get(0);
-
+				
 				while (j <= CANTITEMS) {
 					if (resultadoItemsID.getItemId(i) != -1) {
-
+						
+						
 						queryitem = session.createQuery("FROM MyItem WHERE idItem = :idItem");
 						queryitem.setParameter("idItem", resultadoItemsID.getItemId(i));
 
 						MyItem resultadoDatoItem = (MyItem) queryitem.getSingleResult();
-
+						
+						//le añado al personaje el item para que lo pueda visualizar por pantalla
 						dbPersonaje.anadirItem(resultadoDatoItem.getIdItem(), resultadoDatoItem.getNombre(),
 								resultadoDatoItem.getWearLocation(), resultadoDatoItem.getBonusSalud(),
 								resultadoDatoItem.getBonusEnergia(), resultadoDatoItem.getBonusFuerza(),
@@ -420,14 +427,17 @@ public class Conector {
 
 		HibernateUtil.openSessionAndBindToThread();
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int i = 0;
 		
 		try {
+			
+			//creo mochila del id del personaje
 			final Mochila mochila = new Mochila(paquetePersonaje.getId());
-
-			int i = 0;
-			while (i < paquetePersonaje.getCantItems()) {
+			
+			// por cada item que tiene el personaje seteo la mochila
+			for(i=0 ; i<paquetePersonaje.getCantItems();i++) {
 				mochila.setItem(i + 1, paquetePersonaje.getItemID(i));
-				i++;
+				
 			}
 
 			// actualizo inventario de mochila
@@ -453,8 +463,61 @@ public class Conector {
 	 */
 	public void actualizarInventario(final int idPersonaje) {
 		
-		//llamo al de arriba
-		actualizarInventario(Servidor.getPersonajesConectados().get(idPersonaje));
+		HibernateUtil.openSessionAndBindToThread();
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+
+		Transaction tx = null;
+		int itemGanado;
+		int value = 0;
+		
+		try {
+			PaquetePersonaje paquetePersonaje = Servidor.getPersonajesConectados().get(idPersonaje);
+			tx = session.beginTransaction();
+			Query query = session
+					.createQuery("UPDATE Mochila " + "SET item1 = :it1 ,item2 = :it2 ,item3 = :it3 ,item4 = :it4 ,"
+							+ "item5 = :it5 ,item6 = :it6 ,item7 = :it7 ,item8 = :it8 ,"
+							+ "item9 = :it9 ,item10 = :it10 ,item11 = :it11 ,item12 = :it12 ,"
+							+ "item13 = :it13 ,item14 = :it14 ,item15 = :it15 ,item16 = :it16 ,"
+							+ "item17 = :it17 ,item18 = :it18 ,item19 = :it19 ,item20 = :it20"
+							+ " WHERE idMochila = :idMochila");
+
+			// actualiazo la mochila segun los items que tenga el personaje
+			
+			for (int i = 1; i <= paquetePersonaje.getCantItems(); i++) {
+				query.setParameter("it" + i, paquetePersonaje.getItemID(i - 1));
+			}
+			
+			
+			itemGanado = new Random().nextInt(CANTITEMS + CANTITEMSMOCHILA) + 1;
+			
+			//seteo el item random ganado en la ultima ranura libre
+			if (paquetePersonaje.getCantItems() < CANTITEMS) {
+				value = paquetePersonaje.getCantItems() + 1;
+				query.setParameter("it" + value, itemGanado);
+				paquetePersonaje.anadirItem(itemGanado);
+			}
+			
+			// pongo el resto vacio
+			for (int j = paquetePersonaje.getCantItems() + 1; j <= CANTITEMSMOCHILA; j++) {
+				query.setParameter("it" + j, -1);
+			}
+			
+			//donde la mochila sea igual a idmochila
+			query.setParameter("idMochila", paquetePersonaje.getIdMochila());
+			
+			query.executeUpdate();
+			
+			tx.commit();
+		}
+		catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			Servidor.getLog().append("Fallo al intentar actualizar inventario" + System.lineSeparator());
+			Servidor.getLog().append(e.getMessage() + System.lineSeparator());
+		} finally {
+			HibernateUtil.closeSessionAndUnbindFromThread();
+		}
+
 		
 	}
 
