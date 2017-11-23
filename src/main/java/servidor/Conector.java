@@ -39,19 +39,10 @@ public class Conector {
 		try {
 
 			Servidor.getLog().append("Estableciendo conexión con la base de datos..." + System.lineSeparator());
-			// connect = DriverManager.getConnection("jdbc:sqlite:" + url);
+			HibernateUtil.buildSessionFactory();
 			Servidor.getLog().append("Conexión con la base de datos establecida con éxito." + System.lineSeparator());
 
-			HibernateUtil.buildSessionFactory();
-			/*
-			 * try { // configuramos hibernate segun nuestro xml de configuracion
-			 * Configuration cfg = new Configuration(); cfg.configure("hibernate.cfg.xml");
-			 * Servidor.getLog().append("Inicializando SessionFactory..." +
-			 * System.lineSeparator()); this.setSessionFactory(cfg.buildSessionFactory()); }
-			 * catch (HibernateException he) { Servidor.getLog().
-			 * append("Ocurrió un error en la inicialización de la SessionFactory: " + he);
-			 * throw new ExceptionInInitializerError(he); }
-			 */
+			
 		} catch (HibernateException ex) {
 			Servidor.getLog().append("Fallo al intentar establecer la conexión con la base de datos. " + ex.getMessage()
 					+ System.lineSeparator());
@@ -249,20 +240,9 @@ public class Conector {
 			tx = session.beginTransaction();
 
 			// actualizo nuevos atributos del Personaje
-			Query query = session.createQuery("UPDATE PaquetePersonaje SET fuerza=:fuerza,"
-					+ "destreza=:destreza, inteligencia=:inteligencia, saludTope=:saludTope, energiaTope=:energiaTope,"
-					+ "experiencia= :experiencia, nivel= :nivel " + "WHERE idPersonaje=:idPersonaje");
+			session.update(paquetePersonaje);
 
-			query.setParameter("fuerza", paquetePersonaje.getFuerza());
-			query.setParameter("destreza", paquetePersonaje.getDestreza());
-			query.setParameter("inteligencia", paquetePersonaje.getInteligencia());
-			query.setParameter("saludTope", paquetePersonaje.getSaludTope());
-			query.setParameter("energiaTope", paquetePersonaje.getEnergiaTope());
-			query.setParameter("experiencia", paquetePersonaje.getExperiencia());
-			query.setParameter("nivel", paquetePersonaje.getNivel());
-			query.setParameter("idPersonaje", paquetePersonaje.getId());
-
-			query.executeUpdate();
+			//query.executeUpdate();
 
 			// me traigo la mochila del personaje
 			Query queryMochila = session.createQuery("FROM Mochila WHERE idMochila = :idMochila");
