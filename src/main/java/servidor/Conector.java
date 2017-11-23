@@ -310,6 +310,7 @@ public class Conector {
 		int i = 2;
 		int j = 0;
 		Transaction tx = null;
+		Mochila resultadoItemsID;
 		HibernateUtil.openSessionAndBindToThread();
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		tx = session.beginTransaction();
@@ -329,28 +330,27 @@ public class Conector {
 			// en su mochila
 			Query queryMochila = session.createQuery("FROM Mochila WHERE idMochila = :idMochila");
 			queryMochila.setParameter("idMochila", dbPersonaje.getId());
-			List<Mochila> resultadoItemsIDList = queryMochila.list();
+			List<Mochila> listaItems = queryMochila.list();
 
-			Query queryitem;
-
-			Mochila resultadoItemsID;
+			
 			dbPersonaje.eliminarItems();
 			
-			// si tiene items se los añado
-			if (resultadoItemsIDList != null && !resultadoItemsIDList.isEmpty()) {
+			// si tiene items le añado los bonus
+			if (listaItems != null && !listaItems.isEmpty()) {
 
-				resultadoItemsID = resultadoItemsIDList.get(0);
+				resultadoItemsID = listaItems.get(0);
 				
 				while (j <= CANTITEMS) {
 					if (resultadoItemsID.getItemId(i) != -1) {
 						
 						
-						queryitem = session.createQuery("FROM MyItem WHERE idItem = :idItem");
+						Query queryitem = session.createQuery("FROM MyItem WHERE idItem = :idItem");
+						//busco el item en la tabla items segun su id y me traigo sus valores
 						queryitem.setParameter("idItem", resultadoItemsID.getItemId(i));
 
 						MyItem resultadoDatoItem = (MyItem) queryitem.getSingleResult();
 						
-						//le añado al personaje el item para que lo pueda visualizar por pantalla
+						//le añado al personaje el item para que lo pueda visualizar 
 						dbPersonaje.anadirItem(resultadoDatoItem.getIdItem(), resultadoDatoItem.getNombre(),
 								resultadoDatoItem.getWearLocation(), resultadoDatoItem.getBonusSalud(),
 								resultadoDatoItem.getBonusEnergia(), resultadoDatoItem.getBonusFuerza(),
