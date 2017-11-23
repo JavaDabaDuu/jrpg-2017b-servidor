@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-mapping>
-	<class name="hibernate.MyItem" table="item">
+	<class name="dominio.MyItem" table="item">
 		<id column="idItem" name="idItem" type="int" />
 		<property column="wereable" name="wearLocation" type="int" />		
 		<property column="bonusSalud" name="bonusSalud" type="int" />		

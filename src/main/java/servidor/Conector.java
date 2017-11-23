@@ -19,10 +19,10 @@ import mensajeria.PaquetePersonaje;
 import mensajeria.PaqueteUsuario;
 import org.hibernate.query.Query;
 
+import dominio.Inventario;
+import dominio.Mochila;
+import dominio.MyItem;
 import hibernate.HibernateUtil;
-import hibernate.Inventario;
-import hibernate.Mochila;
-import hibernate.MyItem;
 
 /**
  * The Class Conector.

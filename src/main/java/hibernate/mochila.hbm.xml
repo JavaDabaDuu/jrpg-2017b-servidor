@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="hibernate.Mochila" table="mochila">
+	<class name="dominio.Mochila" table="mochila">
 		<id column="idMochila" name="idMochila" type="int">
 		<generator class="increment"/></id>
 		
