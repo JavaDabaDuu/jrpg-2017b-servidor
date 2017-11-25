@@ -126,8 +126,6 @@ public class Conector {
 	 */
 	public boolean registrarPersonaje(final PaquetePersonaje paquetePersonaje, final PaqueteUsuario paqueteUsuario) {
 
-		// Session session = getSessionFactory().openSession();
-
 		HibernateUtil.openSessionAndBindToThread();
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -241,8 +239,6 @@ public class Conector {
 
 			// actualizo nuevos atributos del Personaje
 			session.update(paquetePersonaje);
-
-			//query.executeUpdate();
 
 			// me traigo la mochila del personaje con sus items
 			Query queryMochila = session.createQuery("FROM Mochila WHERE idMochila = :idMochila");
