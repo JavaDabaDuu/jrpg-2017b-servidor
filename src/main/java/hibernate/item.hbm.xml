@@ -4,6 +4,7 @@
 <hibernate-mapping>
 	<class name="dominio.MyItem" table="item">
 		<id column="idItem" name="idItem" type="int" />
+		<property column="nombre" name="nombre" type="string"/>
 		<property column="wereable" name="wearLocation" type="int" />		
 		<property column="bonusSalud" name="bonusSalud" type="int" />		
 		<property column="bonusEnergia" name="bonusEnergia" type="int" />	
